@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
@@ -6,16 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name', 'Elegance') }} - Fashion Design Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family={{ app()->getLocale() == 'ar' ? 'Tajawal' : 'Poppins' }}:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- <link href="https://fonts.googleapis.com/css2?family={{ app()->getLocale() == 'ar' ? 'Tajawal' : 'Poppins' }}:wght@300;400;500;700&display=swap" rel="stylesheet"> -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: '{{ app()->getLocale() == 'ar' ? 'Tajawal' : 'Poppins' }}', sans-serif;
     }
     
-   
+    body {
+      background-color: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+    }
     
     .container {
       width: 90%;
@@ -86,6 +90,8 @@
       height: 2px;
       background-color: #ffd1dc;
       bottom: -5px;
+      left: 0;
+      transition: width 0.3s ease;
     }
     
     nav ul li a:hover::after {
@@ -155,6 +161,7 @@
       align-items: center;
       background-color: #f9f9f9;
       overflow: hidden;
+      padding-top: 80px;
     }
     
     .hero-content {
@@ -188,20 +195,33 @@
     
     .hero-image {
       position: absolute;
-     
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50%;
+      height: 100%;
+      z-index: 1;
     }
     
     .hero-image img {
       position: absolute;
-      top: 0;
-      
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 80%;
+      width: auto;
+      object-fit: cover;
     }
     
     .hero-image::before {
       content: '';
       position: absolute;
       top: 0;
-      
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, #f9f9f9 0%, rgba(249, 249, 249, 0) 100%);
+      z-index: 1;
     }
     
     /* Features Section */
@@ -417,7 +437,7 @@
       height: 40px;
       border-radius: 50%;
       object-fit: cover;
-     
+      margin-right: 10px;
     }
     
     .instructor-name {
@@ -600,16 +620,30 @@
       position: absolute;
     }
     
+    .testimonial-content::before {
+      top: -10px;
+      left: -15px;
+    }
     
+    .testimonial-content::after {
+      bottom: -10px;
+      right: -15px;
+    }
     
-   
     .testimonial-author {
       display: flex;
       align-items: center;
       justify-content: center;
     }
     
-   
+    .author-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+    
     .author-info h4 {
       font-size: 18px;
       font-weight: 500;
@@ -622,7 +656,11 @@
     }
     
     /* CTA Section */
-   
+    .cta {
+      padding: 80px 0;
+      background-color: #f9f9f9;
+      text-align: center;
+    }
     
     .cta h2 {
       font-size: 36px;
@@ -666,6 +704,15 @@
       padding-bottom: 10px;
     }
     
+    .footer-column h3::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 2px;
+      background-color: #ffd1dc;
+      bottom: 0;
+      left: 0;
+    }
     
     .footer-column p {
       font-size: 14px;
@@ -707,9 +754,33 @@
       color: #ffd1dc;
     }
     
-   
+    .newsletter {
+      margin-top: 20px;
+    }
     
-   
+    .newsletter form {
+      display: flex;
+    }
+    
+    .newsletter input {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 4px 0 0 4px;
+      font-family: inherit;
+    }
+    
+    .newsletter button {
+      background-color: #ffd1dc;
+      color: #333;
+      border: none;
+      padding: 0 20px;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-weight: 500;
+    }
     
     .newsletter button:hover {
       background-color: #ff9aad;
@@ -733,7 +804,11 @@
         font-size: 40px;
       }
       
-      
+      .hero-image {
+        opacity: 0.5;
+        width: 100%;
+        right: -20%;
+      }
     }
     
     @media (max-width: 768px) {
@@ -758,7 +833,11 @@
         opacity: 0.3;
       }
       
-      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
     @media (max-width: 576px) {
       .header-content {
         padding: 10px 0;
@@ -790,7 +869,7 @@
     }
   </style>
 </head>
-<b>
+<body>
   <!-- Header -->
   <header>
     <div class="container">
@@ -799,13 +878,12 @@
         <nav>
           <ul>
             <li><a href="#hero">{{ __('Home') }}</a></li>
-           
             <li><a href="#designers">{{ __('Designers') }}</a></li>
             <li><a href="#products">{{ __('Products') }}</a></li>
             <li><a href="#courses">{{ __('Courses') }}</a></li>
             <li><a href="#contact">{{ __('Contact') }}</a></li>
-            <li><a href="#contact">{{ __('About') }}</a></li>
-            <li><a href="#contact">{{ __('Blog') }}</a></li>
+            <li><a href="{{ route('about') }}">{{ __('About') }}</a></li>
+            <li><a href="/blog">{{ __('Blog') }}</a></li>
           </ul>
         </nav>
         <div class="cta-buttons">
@@ -893,9 +971,6 @@
       </div>
     </div>
   </section>
-  
-
-
 
   <!-- Designers Section -->
   <section class="designers" id="designers">
@@ -944,7 +1019,7 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <input type="hidden" name="size" value="M">
                 <input type="hidden" name="quantity" value="1">
-                <button type="submit" style="background:none;border:none;cursor:pointer;">
+                <button type="submit">
                   <i class="fas fa-shopping-cart"></i>
                 </button>
               </form>
@@ -952,7 +1027,7 @@
               <form action="{{ route('favorites.toggle') }}" method="POST" style="display:inline;">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
-                <button type="submit" style="background:none;border:none;cursor:pointer;">
+                <button type="submit">
                   <i class="fas fa-heart {{ auth()->user()->hasFavorited($product->id) ? 'text-danger' : '' }}"></i>
                 </button>
               </form>
@@ -966,8 +1041,8 @@
             <p class="product-designer">Design by: {{ $product->designer->name }}</p>
             <span class="product-price">
               @if($product->hasDiscount())
-                <span style="text-decoration:line-through;color:#999;">${{ number_format($product->price, 2) }}</span>
-                ${{ number_format($product->discounted_price, 2) }}
+                <span class="original-price">${{ number_format($product->price, 2) }}</span>
+                <span class="discount-price">${{ number_format($product->discounted_price, 2) }}</span>
               @else
                 ${{ number_format($product->price, 2) }}
               @endif
@@ -981,4 +1056,135 @@
       </div>
     </div>
   </section>
-  
+
+  <!-- Courses Section -->
+  <section class="courses" id="courses">
+    <div class="container">
+      <div class="section-header">
+        <h2>Featured Courses</h2>
+        <p>Learn fashion design from our professional designers</p>
+      </div>
+      <div class="courses-grid">
+        @foreach($featuredCourses as $course)
+        <div class="course-card">
+          <img src="{{ $course->image ? asset('storage/'.$course->image) : '/api/placeholder/400/200' }}" alt="{{ $course->title }}" class="course-image">
+          <div class="course-info">
+            <span class="course-category">{{ $course->category ? $course->category->name : 'Fashion Design' }}</span>
+            <h3 class="course-title">{{ $course->title }}</h3>
+            <div class="course-instructor">
+              <img src="{{ $course->designer->profile_picture ? asset('storage/'.$course->designer->profile_picture) : '/api/placeholder/40/40' }}" alt="{{ $course->designer->name }}" class="instructor-avatar">
+              <span class="instructor-name">{{ $course->designer->name }}</span>
+            </div>
+            <div class="course-meta">
+              <span class="course-price">${{ number_format($course->price, 2) }}</span>
+              <a href="{{ route('courses.show', $course->id) }}" class="course-action">Learn More</a>
+            </div>
+          </div>
+        </div>
+        @endforeach
+      </div>
+      <div class="view-all-btn">
+        <a href="{{ route('courses.index') }}" class="btn btn-outline">View All Courses</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <h2>Start Your Fashion Journey Today</h2>
+      <p>Join our platform to explore exclusive designs, connect with talented designers, and learn fashion design skills</p>
+      <a href="{{ route('register') }}" class="btn btn-primary">Create Account</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>About Elegance</h3>
+          <p>A platform connecting distinguished fashion designers with customers seeking uniqueness, offering piece customization and learning through outstanding fashion design courses.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="{{ route('landing') }}">Home</a></li>
+            <li><a href="{{ route('products.index') }}">Products</a></li>
+            <li><a href="{{ route('designers.index') }}">Designers</a></li>
+            <li><a href="{{ route('courses.index') }}">Courses</a></li>
+            <li><a href="{{ route('about') }}">About Us</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Contact Info</h3>
+          <ul class="footer-links">
+            <li><i class="fas fa-map-marker-alt"></i> 123 Fashion Street, Amman, Jordan</li>
+            <li><i class="fas fa-phone"></i> +962 77 123 4567</li>
+            <li><i class="fas fa-envelope"></i> info@elegance.com</li>
+          </ul>
+          <div class="newsletter">
+            <form action="{{ route('newsletter.subscribe') }}" method="POST">
+              @csrf
+              <input type="email" name="email" placeholder="Join our newsletter">
+              <button type="submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; {{ date('Y') }} Elegance. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll header effect
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navMenu = document.querySelector('nav ul');
+
+    mobileMenuBtn.addEventListener('click', function() {
+      navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === "#") return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+          
+          // Close mobile menu after clicking
+          if (window.innerWidth < 768) {
+            navMenu.style.display = 'none';
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

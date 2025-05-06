@@ -1,28 +1,39 @@
 <?php
-
+// app/Http/Controllers/ProductController.php
 namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
+    /**
+     * Display a listing of products with filters.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
     public function index(Request $request)
     {
-        // الحصول على جميع التصنيفات لعرضها في الفلتر
+        // Get all categories for the filter
         $categories = Category::all();
         
-        // بناء الاستعلام حسب الفلاتر المطبقة
-        $query = Product::query();
+        // Get all designers for the designer filter
+        $designers = User::where('is_designer', true)->get();
         
-        // فلتر حسب التصنيف
+        // Build the query based on applied filters
+        $query = Product::query()->with('designer');
+        
+        // Filter by category
         if ($request->has('category') && $request->category != '') {
-            $query->where('category', $request->category);
+            $query->where('category_id', $request->category);
         }
         
-        // فلتر حسب السعر
+        // Filter by price range
         if ($request->has('min_price') && $request->min_price != '') {
             $query->where('price', '>=', $request->min_price);
         }
@@ -31,12 +42,17 @@ class ProductController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
         
-        // فلتر حسب اللون
+        // Filter by color
         if ($request->has('color') && $request->color != '') {
             $query->where('color', $request->color);
         }
         
-        // الترتيب
+        // Filter by designer
+        if ($request->has('designer') && $request->designer != '') {
+            $query->where('designer_id', $request->designer);
+        }
+        
+        // Sort products
         $sort = $request->input('sort', 'newest');
         
         switch ($sort) {
@@ -55,12 +71,36 @@ class ProductController extends Controller
                 break;
         }
         
-        // الحصول على الألوان المتوفرة للفلتر
+        // Get available colors for the filter
         $colors = DB::table('products')->select('color')->distinct()->pluck('color');
         
-        // تقسيم النتائج إلى صفحات
-        $products = $query->with('designer')->paginate(12);
+        // Paginate the results
+        $products = $query->paginate(12);
         
-        return view('products.index', compact('products', 'categories', 'colors'));
+        return view('products.index', compact('products', 'categories', 'colors', 'designers'));
+    }
+
+    /**
+     * Display the specified product.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\View\View
+     */
+    public function show(Product $product)
+    {
+        // Load related data
+        $product->load(['designer', 'sizes', 'ratings.user', 'discount']);
+        
+        // Get related products from same designer or category
+        $relatedProducts = Product::where('id', '!=', $product->id)
+            ->where(function($query) use ($product) {
+                $query->where('designer_id', $product->designer_id)
+                      ->orWhere('category_id', $product->category_id);
+            })
+            ->with('designer')
+            ->limit(4)
+            ->get();
+        
+        return view('products.show', compact('product', 'relatedProducts'));
     }
 }
