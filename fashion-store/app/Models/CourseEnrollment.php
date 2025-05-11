@@ -9,34 +9,27 @@ class CourseEnrollment extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected $table = 'course_enrollments';
+
     protected $fillable = [
         'course_id',
         'user_id',
+        'name',
+        'email',
+        'phone',
+        'notes',
+        'status',
+        'enrolled_at'
     ];
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
     protected $dates = [
         'enrolled_at',
+        'created_at',
+        'updated_at'
     ];
 
     /**
-     * Get the course that this enrollment belongs to.
+     * Get the course that owns the enrollment.
      */
     public function course()
     {
@@ -44,7 +37,7 @@ class CourseEnrollment extends Model
     }
 
     /**
-     * Get the user that enrolled in this course.
+     * Get the user that owns the enrollment.
      */
     public function user()
     {

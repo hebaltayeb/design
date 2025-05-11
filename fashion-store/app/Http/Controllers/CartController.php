@@ -1,48 +1,39 @@
 <?php
-// app/Http/Controllers/CartController.php
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\Size;
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class CartController extends Controller
 {
-    public function add(Request $request)
+    public function index()
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'size' => 'required|string',
-            'quantity' => 'required|integer|min:1|max:10',
-        ]);
+        $cart = session()->get('cart', []);
+        $products = [];
+        $total = 0;
 
-        $product = Product::findOrFail($request->product_id);
-        $size = Size::where('product_id', $product->id)
-            ->where('size', $request->size)
-            ->where('stock_quantity', '>=', $request->quantity)
-            ->firstOrFail();
-
-        // Add to cart logic here (using session or database)
-        // This is a simplified example
-        if (!session()->has('cart')) {
-            session()->put('cart', []);
+        // تعديل الحلقات لتقسيم الـ key واسترجاع الـ product_id
+        foreach ($cart as $key => $details) {
+            $id = explode('-', $key)[0]; // استخراج الـ product_id من الـ key
+            $product = Product::find($id);
+            
+            if ($product) {
+                $price = $product->hasDiscount() ? $product->discounted_price : $product->price;
+                $itemTotal = $price * $details['quantity'];
+                $total += $itemTotal;
+                
+                $products[] = [
+                    'product' => $product,
+                    'size' => $details['size'],
+                    'quantity' => $details['quantity'],
+                    'price' => $price,
+                    'total' => $itemTotal
+                ];
+            }
         }
         
-        $cartItem = [
-            'id' => uniqid(),
-            'product_id' => $product->id,
-            'name' => $product->name,
-            'price' => $product->hasDiscount() ? $product->discounted_price : $product->price,
-            'size' => $request->size,
-            'quantity' => $request->quantity,
-            'image' => $product->image,
-        ];
-        
-        $cart = session()->get('cart');
-        $cart[] = $cartItem;
-        session()->put('cart', $cart);
-
-        return redirect()->back()->with('success', 'Product added to cart!');
+        return view('cart.index', compact('products', 'total'));
     }
+    
+    // باقي الوظائف الأخرى كما هي
 }
-

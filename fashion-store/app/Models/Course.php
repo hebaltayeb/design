@@ -15,12 +15,19 @@ class Course extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'designer_id',
-        'title',
-        'description',
-        'price',
+        'designer_id', 
+        'title', 
+        'description', 
+        'full_description',
+        'price', 
         'video_url',
-        'category_id',
+        'preview_url',
+        'duration',
+        'lessons_count',
+        'level',
+        'language',
+        'image',
+        'category_id'
     ];
 
     /**
@@ -30,6 +37,7 @@ class Course extends Model
      */
     protected $casts = [
         'price' => 'decimal:2',
+        
     ];
 
     /**
@@ -45,7 +53,7 @@ class Course extends Model
      */
     public function enrollments()
     {
-        return $this->hasMany(CourseEnrollment::class);
+        return $this->hasMany(Enrollment::class);
     }
 
     /**
@@ -53,7 +61,40 @@ class Course extends Model
      */
     public function enrolledUsers()
     {
-        return $this->belongsToMany(User::class, 'course_enrollments');
+        return $this->belongsToMany(User::class, 'course_enrollments')->withTimestamp('enrolled_at');;
     }
     
+    /**
+     * Get the category this course belongs to.
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    
+    /**
+     * Get the discounted price of the course if applicable.
+     * 
+     * @return float|null
+     */
+    public function getDiscountedPriceAttribute()
+    {
+        // Implement discount logic if needed
+        return null;
+    }
+    
+    /**
+     * Get the total number of students enrolled in this course.
+     * 
+     * @return int
+     */
+    public function getStudentsCountAttribute()
+    {
+        return $this->enrollments()->count();
+    }
+    public function learningPoints()
+{
+    return $this->hasMany(LearningPoint::class);
+}
+
 }

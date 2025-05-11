@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\User;
@@ -13,34 +14,28 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $categories = Category::all();
-
-    // جلب الدورات بناءً على الفلاتر والبحث
-    $courses = Course::query()
-        ->when($request->input('search'), function ($query, $search) {
-            return $query->where('title', 'like', "%$search%");
-        })
-        ->when($request->input('category'), function ($query, $categoryId) {
-            return $query->where('category_id', $categoryId);
-        })
-        ->get();
-
-    return view('courses.index', compact('courses', 'categories'));
-
-        $courses = Course::with('designer')->get(); // assuming 'designer' is the relation to User
-    return view('courses.index', compact('courses'));
+        $designers = User::where('is_designer', true)->get();
+    
         $query = Course::query()->with('designer');
-        
+    
         // البحث عن الدورات
         if ($request->has('search')) {
-            $query->where('title', 'LIKE', '%' . $request->search . '%')
-                ->orWhere('description', 'LIKE', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('description', 'LIKE', '%' . $request->search . '%');
+            });
         }
-        
+    
+        // التصفية حسب الفئة
+        if ($request->has('category') && $request->category) {
+            $query->where('category_id', $request->category);
+        }
+    
         // التصفية حسب المصمم
         if ($request->has('designer') && $request->designer) {
             $query->where('designer_id', $request->designer);
         }
-        
+    
         // التصفية حسب السعر
         if ($request->has('price')) {
             if ($request->price == 'low') {
@@ -49,43 +44,56 @@ class CourseController extends Controller
                 $query->orderBy('price', 'desc');
             }
         }
-        
-        $courses = $query->paginate(6);
-        $designers = User::where('is_designer', true)->get();
-        
-        return view('courses.index', compact('courses', 'designers'));
-    }
     
+        $courses = $query->paginate(6);
+    
+        return view('courses.index', compact('courses', 'categories', 'designers'));
+    }
+
     public function show($id)
     {
-        $course = Course::with('designer')->findOrFail($id);
-        return view('courses.coursdetals', compact('course'));
+        $course = Course::with('designer', 'category')->findOrFail($id);
+
+        // جلب دورات مشابهة من نفس الفئة باستثناء الدورة الحالية
+        $relatedCourses = Course::where('category_id', $course->category_id)
+            ->where('id', '!=', $course->id)
+            ->take(3)
+            ->get();
+
+        return view('courses.course-details', compact('course', 'relatedCourses'));
     }
-    
+
     public function enroll(Request $request, $id)
     {
+        // التحقق من صحة البيانات
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'nullable|string|max:20',
         ]);
 
+        // جلب الدورة بناءً على المعرف
         $course = Course::findOrFail($id);
         
         // إذا كان المستخدم مسجل دخول استخدم معرف المستخدم الحالي
         $userId = Auth::check() ? Auth::id() : null;
         
+        // في حالة المستخدم غير المسجل دخول، يمكن تخزين بياناته كـ "مستخدم ضيف"
+        if (!$userId) {
+            // يمكن حفظ البيانات في جدول منفصل للمستخدمين غير المسجلين، إذا كنت ترغب في ذلك
+            // مثال: حفظ البيانات في جدول `guest_enrollments`
+        }
+
         // انشاء تسجيل دورة جديد
         $enrollment = new Enrollment();
         $enrollment->course_id = $course->id;
         $enrollment->user_id = $userId;
+        $enrollment->name = $request->name;
+        $enrollment->email = $request->email;
+        $enrollment->phone = $request->phone;
         $enrollment->payment_status = 'pending';
         $enrollment->save();
         
-        // حفظ معلومات الاتصال الإضافية بطريقة مناسبة
-        // يمكن إضافة جدول إضافي لتخزين معلومات التسجيل للمستخدمين غير المسجلين
-        
         return redirect()->back()->with('success', 'تم تسجيلك في الدورة بنجاح!');
     }
-    
 }

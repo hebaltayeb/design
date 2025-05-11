@@ -268,6 +268,10 @@
             background-color: #ffd1dc;
             color: #333;
         }
+
+        .product-actions .favorite-btn.favorited {
+            color: #ff5b79;
+        }
         
         .product-badge {
             position: absolute;
@@ -339,6 +343,67 @@
             border-color: #ffd1dc;
             color: #333;
         }
+
+        /* Toast notification styles */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background-color: #4CAF50;
+        }
+
+        .toast.error {
+            background-color: #F44336;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9998;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #ff5b79;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         
         @media (max-width: 992px) {
             .products-container {
@@ -380,10 +445,26 @@
                     <li><a href="{{ route('courses.index') }}">Courses</a></li>
                     <li><a href="{{ route('about') }}">About</a></li>
                     <li><a href="{{ route('contact') }}">Contact</a></li>
+                    <li><a href="{{ route('favorites.index') }}" class="favorites-link">
+                        <i class="fas fa-heart"></i>
+                        @auth
+                            @if(auth()->user()->favorites()->count() > 0)
+                                <span class="favorites-count">{{ auth()->user()->favorites()->count() }}</span>
+                            @endif
+                        @endauth
+                    </a></li>
                 </ul>
             </nav>
         </div>
     </header>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toastNotification"></div>
 
     <div class="container">
         <div class="page-title">
@@ -494,7 +575,7 @@
                                 <div class="product-actions">
                                     <a href="{{ route('products.show', $product->id) }}" title="View Details"><i class="fas fa-eye"></i></a>
                                     
-                                    <form action="{{ route('cart.add') }}" method="POST">
+                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                         @csrf
                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                                         <input type="hidden" name="size" value="M">
@@ -503,11 +584,12 @@
                                     </form>
                                     
                                     @auth
-                                        <form action="{{ route('favorites.toggle') }}" method="POST">
+                                        <form action="{{ route('favorites.toggle') }}" method="POST" class="favorite-form">
                                             @csrf
                                             <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                            <button type="submit" title="Add to Favorites">
-                                                <i class="fas fa-heart {{ auth()->user()->hasFavorited($product->id) ? 'text-danger' : '' }}"></i>
+                                            <button type="submit" class="favorite-btn {{ auth()->user()->hasFavorited($product->id) ? 'favorited' : '' }}" 
+                                                    title="{{ auth()->user()->hasFavorited($product->id) ? 'Remove from Favorites' : 'Add to Favorites' }}">
+                                                <i class="fas fa-heart"></i>
                                             </button>
                                         </form>
                                     @else
@@ -553,6 +635,156 @@
                 document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
                 this.classList.add('active');
                 document.getElementById('selected-color').value = this.dataset.color;
+            });
+        });
+
+        // Function to show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+
+        // Function to show loading spinner
+        function showLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.className = show ? 'loading-spinner active' : 'loading-spinner';
+        }
+
+        // AJAX functionality for favorite toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const favoritesForms = document.querySelectorAll('.favorite-form');
+            
+            favoritesForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const button = this.querySelector('.favorite-btn');
+                    const productId = formData.get('product_id');
+                    
+                    showLoading(true);
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showLoading(false);
+                        
+                        if (data.status === 'success') {
+                            // Toggle the button appearance
+                            button.classList.toggle('favorited');
+                            
+                            // Update tooltip/title
+                            if (button.classList.contains('favorited')) {
+                                button.setAttribute('title', 'Remove from Favorites');
+                                showToast('Product added to favorites!');
+                                
+                                // Update favorites count in header
+                                const favoritesCount = document.querySelector('.favorites-count');
+                                if (favoritesCount) {
+                                    favoritesCount.textContent = parseInt(favoritesCount.textContent) + 1;
+                                } else {
+                                    const favoritesLink = document.querySelector('.favorites-link');
+                                    const newCount = document.createElement('span');
+                                    newCount.className = 'favorites-count';
+                                    newCount.textContent = '1';
+                                    favoritesLink.appendChild(newCount);
+                                }
+                                
+                                // Redirect to favorites page after 1 second
+                                setTimeout(() => {
+                                    window.location.href = "{{ route('favorites.index') }}";
+                                }, 1000);
+                            } else {
+                                button.setAttribute('title', 'Add to Favorites');
+                                showToast('Product removed from favorites!');
+                                
+                                // Update favorites count in header
+                                const favoritesCount = document.querySelector('.favorites-count');
+                                if (favoritesCount) {
+                                    const newCount = parseInt(favoritesCount.textContent) - 1;
+                                    if (newCount > 0) {
+                                        favoritesCount.textContent = newCount;
+                                    } else {
+                                        favoritesCount.remove();
+                                    }
+                                }
+                            }
+                        } else {
+                            showToast(data.message || 'An error occurred', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showLoading(false);
+                        showToast('An error occurred. Please try again.', 'error');
+                        console.error('Error:', error);
+                    });
+                });
+            });
+
+            // AJAX functionality for add to cart
+            const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+            
+            addToCartForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const button = this.querySelector('button');
+                    
+                    showLoading(true);
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showLoading(false);
+                        
+                        if (data.status === 'success') {
+                            showToast('Product added to cart!');
+                            
+                            // Update cart counter in header
+                            const cartCounter = document.querySelector('.cart-counter');
+                            if (cartCounter) {
+                                cartCounter.textContent = parseInt(cartCounter.textContent) + 1;
+                            } else {
+                                const cartIcon = document.querySelector('.icon-btn[title="Cart"]');
+                                if (cartIcon) {
+                                    const newCounter = document.createElement('span');
+                                    newCounter.className = 'counter cart-counter';
+                                    newCounter.textContent = '1';
+                                    cartIcon.appendChild(newCounter);
+                                }
+                            }
+                        } else {
+                            showToast(data.message || 'An error occurred', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showLoading(false);
+                        showToast('An error occurred. Please try again.', 'error');
+                        console.error('Error:', error);
+                    });
+                });
             });
         });
     </script>

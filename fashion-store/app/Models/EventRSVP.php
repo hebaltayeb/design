@@ -5,9 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Favorite extends Model
+class EventRSVP extends Model
 {
     use HasFactory;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'event_rsvps';
 
     /**
      * The attributes that are mass assignable.
@@ -16,16 +23,13 @@ class Favorite extends Model
      */
     protected $fillable = [
         'user_id',
-        'product_id',
-        'created_at'
+        'event_id',
+        'name',
+        'email',
+        'phone',
+        'guest_count',
+        'status',
     ];
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * The attributes that should be cast.
@@ -33,13 +37,11 @@ class Favorite extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'created_at' => 'datetime',
+        'guest_count' => 'integer',
     ];
 
     /**
-     * Get the user that owns this favorite.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Get the user that made this RSVP.
      */
     public function user()
     {
@@ -47,12 +49,10 @@ class Favorite extends Model
     }
 
     /**
-     * Get the product that is favorited.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Get the event that this RSVP is for.
      */
-    public function product()
+    public function event()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(FashionEvent::class, 'event_id');
     }
 }

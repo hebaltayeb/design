@@ -556,7 +556,8 @@
             <p class="course-desc">{{ $course->description }}</p>
             <div class="course-meta">
               <span class="course-price">${{ number_format($course->price, 2) }}</span>
-              <a href="{{ $course->video_url ?? '#' }}" class="btn btn-outline" target="_blank">Watch</a>
+              <a href="{{ route('courses.show', $course->id) }}" class="btn btn-outline">Watch</a>
+
             </div>
           </div>
         </div>

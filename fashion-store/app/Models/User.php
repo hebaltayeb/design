@@ -1,9 +1,8 @@
 <?php
-// This is not the complete User.php file, but just the portions you need to add
-// to your existing User model to support the landing page functionality
 
 namespace App\Models;
 
+use App\Models\Cart;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -89,6 +88,46 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the customization requests made by this user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany 
+     */
+    public function customizationRequests(): HasMany
+    {
+        return $this->hasMany(CustomizeRequest::class);
+    }
+
+    /**
+     * Get the course enrollments of this user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    /**
+     * Get the event RSVPs of this user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function eventRSVPs(): HasMany
+    {
+        return $this->hasMany(EventRSVP::class);
+    }
+
+    /**
+     * Get the media items (gallery) of this designer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function mediaItems(): HasMany
+    {
+        return $this->hasMany(DesignerMedia::class, 'designer_id');
+    }
+
+    /**
      * Check if user has favorited a product.
      *
      * @param int $productId
@@ -120,5 +159,9 @@ class User extends Authenticatable
     public function isDesigner(): bool
     {
         return $this->is_designer;
+    }
+    public function cart()
+    {
+        return $this->hasMany(Cart::class);
     }
 }

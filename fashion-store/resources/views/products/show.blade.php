@@ -602,7 +602,69 @@
         .product-card-price {
             font-weight: 700;
         }
-        
+
+        /* New styles for the modifications */
+        .color-option {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-option.active {
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #ffd1dc;
+        }
+
+        .color-option.active:after {
+            content: '\2713';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        .error-message {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            20%, 60% {transform: translateX(-5px);}
+            40%, 80% {transform: translateX(5px);}
+        }
+
+        #addToCartBtn.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn.disabled {
+            pointer-events: none;
+        }
+
+        /* Confirmation modal styles */
+        #confirmationModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #confirmationModal > div {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
         @media (max-width: 992px) {
             .product-gallery, .product-info {
                 width: 100%;
@@ -723,7 +785,8 @@
                         {{ $product->description }}
                     </div>
                     
-                    <form action="{{ route('cart.add') }}" method="POST">
+                    <!-- Modified Add to Cart Form -->
+                    <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         
@@ -739,6 +802,16 @@
                                     @endforeach
                                 </div>
                                 <input type="hidden" name="size" value="{{ $product->sizes->first()->size ?? 'M' }}" id="selected-size">
+                                <div class="error-message" id="size-error" style="display: none; color: #ff5b79; font-size: 12px; margin-top: 5px;">Please select a size</div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="option-label">Color:</label>
+                                <div class="color-options" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                    <div class="color-option active" data-color="{{ $product->color }}" style="width: 30px; height: 30px; border-radius: 50%; background-color: {{ $product->color }}; cursor: pointer; border: 2px solid #000;"></div>
+                                    <!-- يمكن إضافة ألوان إضافية هنا في حالة توفرها -->
+                                </div>
+                                <input type="hidden" name="color" value="{{ $product->color }}" id="selected-color">
                             </div>
                             
                             <div class="option-group">
@@ -752,7 +825,7 @@
                         </div>
                         
                         <div class="action-buttons">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" id="addToCartBtn" class="btn btn-primary">
                                 <i class="fas fa-shopping-cart"></i> Add to Cart
                             </button>
                             
@@ -772,6 +845,19 @@
                             @endauth
                         </div>
                     </form>
+                    
+                    <!-- Confirmation Modal -->
+                    <div id="confirmationModal" style="display: none;">
+                        <div>
+                            <i class="fas fa-check-circle" style="font-size: 60px; color: #4CAF50; margin-bottom: 20px;"></i>
+                            <h3 style="margin-bottom: 15px;">Added to Cart!</h3>
+                            <p style="margin-bottom: 25px;">The item has been added to your shopping cart.</p>
+                            <div style="display: flex; gap: 15px; justify-content: center;">
+                                <button id="continueShoppingBtn" class="btn btn-outline" style="min-width: 120px;">Continue Shopping</button>
+                                <a href="{{ route('cart.show') }}" class="btn btn-primary" style="min-width: 120px;">View Cart</a>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="product-meta">
                         <div class="meta-item">
@@ -914,53 +1000,134 @@
     </div>
 
     <script>
-        // Thumbnail gallery functionality
-        document.querySelectorAll('.thumbnail').forEach(thumbnail => {
-            thumbnail.addEventListener('click', function() {
-                // Update active state
-                document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('active'));
-                this.classList.add('active');
+        document.addEventListener('DOMContentLoaded', function() {
+            // الحصول على العناصر من DOM
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const addToCartForm = document.getElementById('addToCartForm');
+            const confirmationModal = document.getElementById('confirmationModal');
+            const continueShoppingBtn = document.getElementById('continueShoppingBtn');
+            const sizeError = document.getElementById('size-error');
+            
+            // التعامل مع نقرة زر الإضافة إلى السلة
+            addToCartBtn.addEventListener('click', function() {
+                // التحقق من اختيار الحجم
+                const selectedSize = document.getElementById('selected-size').value;
+                if (!selectedSize) {
+                    sizeError.style.display = 'block';
+                    return;
+                }
                 
-                // Update main image
-                document.getElementById('main-product-image').src = this.dataset.image;
-            });
-        });
-        
-        // Size selection
-        document.querySelectorAll('.size-option:not(.disabled)').forEach(sizeOption => {
-            sizeOption.addEventListener('click', function() {
-                document.querySelectorAll('.size-option').forEach(el => el.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById('selected-size').value = this.dataset.size;
-            });
-        });
-        
-        // Quantity input
-        const quantityInput = document.getElementById('quantity-input');
-        document.getElementById('decrease-qty').addEventListener('click', function() {
-            const currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        });
-        
-        document.getElementById('increase-qty').addEventListener('click', function() {
-            const currentValue = parseInt(quantityInput.value);
-            if (currentValue < 10) {
-                quantityInput.value = currentValue + 1;
-            }
-        });
-        
-        // Tabs functionality
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', function() {
-                // Update active tab button
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
+                // إخفاء رسالة الخطأ إذا تم اختيار الحجم
+                sizeError.style.display = 'none';
                 
-                // Update active tab content
-                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                document.getElementById(this.dataset.tab + '-tab').classList.add('active');
+                // تغيير نص الزر
+                addToCartBtn.innerHTML = '<i class="fas fa-check"></i> Added';
+                addToCartBtn.disabled = true;
+                
+                // إرسال النموذج باستخدام AJAX
+                const formData = new FormData(addToCartForm);
+                
+                fetch(addToCartForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // عرض نافذة التأكيد
+                        confirmationModal.style.display = 'flex';
+                        
+                        // تحديث عدد عناصر السلة في الهيدر (إذا كان موجودًا)
+                        const cartCount = document.getElementById('cartCount');
+                        if (cartCount) {
+                            cartCount.textContent = data.cartCount;
+                            cartCount.style.display = 'inline-block';
+                        }
+                    } else {
+                        // في حالة وجود خطأ
+                        alert(data.message || 'حدث خطأ أثناء إضافة المنتج إلى السلة.');
+                        addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+                        addToCartBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('حدث خطأ أثناء إضافة المنتج إلى السلة.');
+                    addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+                    addToCartBtn.disabled = false;
+                });
+            });
+            
+            // التعامل مع زر "مواصلة التسوق"
+            continueShoppingBtn.addEventListener('click', function() {
+                confirmationModal.style.display = 'none';
+                addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+                addToCartBtn.disabled = false;
+            });
+            
+            // اختيار الحجم
+            document.querySelectorAll('.size-option:not(.disabled)').forEach(sizeOption => {
+                sizeOption.addEventListener('click', function() {
+                    document.querySelectorAll('.size-option').forEach(el => el.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('selected-size').value = this.dataset.size;
+                    sizeError.style.display = 'none';
+                });
+            });
+            
+            // اختيار اللون
+            document.querySelectorAll('.color-option').forEach(colorOption => {
+                colorOption.addEventListener('click', function() {
+                    document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('selected-color').value = this.dataset.color;
+                });
+            });
+
+            // Thumbnail gallery functionality
+            document.querySelectorAll('.thumbnail').forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    // Update active state
+                    document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update main image
+                    document.getElementById('main-product-image').src = this.dataset.image;
+                });
+            });
+            
+            // Quantity input
+            const quantityInput = document.getElementById('quantity-input');
+            document.getElementById('decrease-qty').addEventListener('click', function() {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+            
+            document.getElementById('increase-qty').addEventListener('click', function() {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue < 10) {
+                    quantityInput.value = currentValue + 1;
+                }
+            });
+            
+            // Tabs functionality
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active tab button
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update active tab content
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    document.getElementById(this.dataset.tab + '-tab').classList.add('active');
+                });
             });
         });
     </script>

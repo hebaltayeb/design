@@ -41,4 +41,52 @@ class CustomizeRequest extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    /**
+     * Get the designer of the product.
+     */
+    public function designer()
+    {
+        return $this->product->designer();
+    }
+
+    /**
+     * Check if the request has been responded to.
+     *
+     * @return bool
+     */
+    public function hasResponse()
+    {
+        return !empty($this->designer_response);
+    }
+
+    /**
+     * Check if the request is pending.
+     *
+     * @return bool
+     */
+    public function isPending()
+    {
+        return $this->status === 'pending';
+    }
+
+    /**
+     * Check if the request is approved.
+     *
+     * @return bool
+     */
+    public function isApproved()
+    {
+        return $this->status === 'approved';
+    }
+
+    /**
+     * Check if the request is rejected.
+     *
+     * @return bool
+     */
+    public function isRejected()
+    {
+        return $this->status === 'rejected';
+    }
 }

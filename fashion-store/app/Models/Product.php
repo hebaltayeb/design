@@ -6,7 +6,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
- {
+{
+    use HasFactory;
+    
+    protected $fillable = [
+        'designer_id', 
+        'name', 
+        'description', 
+        'price', 
+        'color', 
+        'category_id', 
+        'image', 
+        'is_featured',
+        'is_customizable', 
+        'favorites_count', 
+        'sales_count', 
+        'seo_title', 
+        'seo_description'
+    ];
 
     public function hasDiscount()
     {
@@ -37,24 +54,12 @@ class Product extends Model
     }
     
     public function designer()
-{
-    return $this->belongsTo(User::class, 'designer_id');
-}
+    {
+        return $this->belongsTo(User::class, 'designer_id');
+    }
 
-
-
-
-  use HasFactory;
-    
-    protected $fillable = [         'designer_id', 'name', 'description', 'price', 
-        'color', 'category', 'image', 'is_featured', 
-        'favorites_count', 'sales_count', 'seo_title', 'seo_description'
-    ];
-
-   
-
-   public function sizes()
-  {
+    public function sizes()
+    {
         return $this->hasMany(Size::class);
     }
 
@@ -62,8 +67,33 @@ class Product extends Model
     {
         return $this->hasOne(Discount::class);
     }
+    
     public function ratings()
-{
-    return $this->hasMany(Rating::class);
-}
+    {
+        return $this->hasMany(Rating::class);
+    }
+    
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    
+    public function customizationRequests()
+    {
+        return $this->hasMany(CustomizeRequest::class);
+    }
+    
+    /**
+     * Calculate the average rating for this product.
+     * 
+     * @return float|null
+     */
+    public function getAverageRatingAttribute()
+    {
+        if ($this->ratings->count() === 0) {
+            return null;
+        }
+        
+        return round($this->ratings->avg('rating'), 1);
+    }
 }
