@@ -5,54 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EventRSVP extends Model
+class FashionEvent extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'event_rsvps';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'user_id',
-        'event_id',
-        'name',
-        'email',
-        'phone',
-        'guest_count',
-        'status',
+        'title',
+        'description',
+        'location',
+        'date',
+        'time',
+        'designer_id',
+        'image',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'guest_count' => 'integer',
+        'date' => 'date',
     ];
 
-    /**
-     * Get the user that made this RSVP.
-     */
-    public function user()
+    public function designer()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the event that this RSVP is for.
-     */
-    public function event()
-    {
-        return $this->belongsTo(FashionEvent::class, 'event_id');
+        return $this->belongsTo(User::class, 'designer_id');
     }
 }

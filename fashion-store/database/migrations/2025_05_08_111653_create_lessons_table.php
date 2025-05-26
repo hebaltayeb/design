@@ -10,7 +10,7 @@ class CreateLessonsTable extends Migration
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignId('module_id')->constrained()->onDelete('cascade');
+            // $table->foreignId('module_id')->constrained()->onDelete('cascade');
             $table->integer('order')->default(0);
             $table->string('duration')->default('0:00');
             $table->longText('content')->nullable();

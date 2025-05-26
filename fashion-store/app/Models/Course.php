@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Enrollment;
+use App\Models\Category;
+use App\Models\LearningPoint;
 
 class Course extends Model
 {
@@ -15,11 +19,10 @@ class Course extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'designer_id', 
-        'title', 
-        'description', 
-        'full_description',
-        'price', 
+        'designer_id',
+        'title',
+        'description',
+        'price',
         'video_url',
         'preview_url',
         'duration',
@@ -27,7 +30,11 @@ class Course extends Model
         'level',
         'language',
         'image',
-        'category_id'
+        'category_id',
+        'start_date',
+        'end_date',
+        "created_at",
+        "updated_at",
     ];
 
     /**
@@ -37,7 +44,7 @@ class Course extends Model
      */
     protected $casts = [
         'price' => 'decimal:2',
-        
+        'start_date' => 'date',
     ];
 
     /**
@@ -61,9 +68,9 @@ class Course extends Model
      */
     public function enrolledUsers()
     {
-        return $this->belongsToMany(User::class, 'course_enrollments')->withTimestamp('enrolled_at');;
+        return $this->belongsToMany(User::class, 'course_enrollments')->withTimestamps();
     }
-    
+
     /**
      * Get the category this course belongs to.
      */
@@ -71,7 +78,7 @@ class Course extends Model
     {
         return $this->belongsTo(Category::class);
     }
-    
+
     /**
      * Get the discounted price of the course if applicable.
      * 
@@ -79,10 +86,10 @@ class Course extends Model
      */
     public function getDiscountedPriceAttribute()
     {
-        // Implement discount logic if needed
+        // You can add discount logic here if needed
         return null;
     }
-    
+
     /**
      * Get the total number of students enrolled in this course.
      * 
@@ -92,9 +99,12 @@ class Course extends Model
     {
         return $this->enrollments()->count();
     }
-    public function learningPoints()
-{
-    return $this->hasMany(LearningPoint::class);
-}
 
+    /**
+     * Get learning points associated with the course.
+     */
+    public function learningPoints()
+    {
+        return $this->hasMany(LearningPoint::class);
+    }
 }

@@ -1,72 +1,81 @@
 @extends('layouts.admin')
 
 @section('content')
-
-    <div class="container">
-    <div class="page-inner">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="card">
-            <div class="card-header">
-              <h4 class="card-title">Products</h4>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Products Management</h3>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Search form -->
+                    <form method="GET" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="text" name="search" class="form-control" 
+                                       placeholder="Search products..." value="{{ request('search') }}">
+                            </div>>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Products table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Designer</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($products as $product)
+                                    <tr>
+                                        <td>{{ $product->id }}</td>
+                                        <td>{{ $product->name }}</td>
+                                        <td>{{ $product->designer->name ?? 'N/A' }}</td>
+                                        <td>${{ number_format($product->price, 2) }}</td>
+                                        <td>
+                                            <span class="badge badge-{{ $product->status === 'active' ? 'success' : 'secondary' }}">
+                                                {{ ucfirst($product->status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('admin.products.show', $product) }}" class="btn btn-sm btn-info">View</a>
+                                            <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning">Edit</a>
+                                            <form method="POST" action="{{ route('admin.products.destroy', $product) }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">No products found</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination links -->
+                    @if($products->hasPages())
+                        <div class="d-flex justify-content-center">
+                            {{ $products->appends(request()->query())->links() }}
+                        </div>
+                    @endif
+                </div>
             </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table
-                  id="basic-datatables"
-                  class="display table table-striped table-hover">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Position</th>
-                      <th>Office</th>
-                      <th>Age</th>
-                      <th>Start date</th>
-                      <th>Salary</th>
-                    </tr>
-                  </thead>
-                  
-                  <tbody>
-                    <tr>
-                      <td>Tiger Nixon</td>
-                      <td>System Architect</td>
-                      <td>Edinburgh</td>
-                      <td>61</td>
-                      <td>2011/04/25</td>
-                      <td>$320,800</td>
-                    </tr>
-                    <tr>
-                      <td>Garrett Winters</td>
-                      <td>Accountant</td>
-                      <td>Tokyo</td>
-                      <td>63</td>
-                      <td>2011/07/25</td>
-                      <td>$170,750</td>
-                    </tr>
-                    <tr>
-                      <td>Ashton Cox</td>
-                      <td>Junior Technical Author</td>
-                      <td>San Francisco</td>
-                      <td>66</td>
-                      <td>2009/01/12</td>
-                      <td>$86,000</td>
-                    </tr>
-                    <tr>
-                      <td>Cedric Kelly</td>
-                      <td>Senior Javascript Developer</td>
-                      <td>Edinburgh</td>
-                      <td>22</td>
-                      <td>2012/03/29</td>
-                      <td>$433,060</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-    </div>
-
+</div>
 @endsection

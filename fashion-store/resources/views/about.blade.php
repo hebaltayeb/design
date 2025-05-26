@@ -326,7 +326,7 @@
           <p>We believe that every woman deserves to wear unique pieces that express her personality and style, which is why we work with creative designers who can transform each piece into a unique story of creativity and distinction.</p>
         </div>
         <div class="section-media">
-            <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01js97ax1weby966cwa0bwc351%2Fimg_0.webp?st=2025-04-22T12%3A33%3A40Z&se=2025-04-28T13%3A33%3A40Z&sks=b&skt=2025-04-22T12%3A33%3A40Z&ske=2025-04-28T13%3A33%3A40Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=aa5ddad1-c91a-4f0a-9aca-e20682cc8969&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=Vnk1Qxa%2FG3hI8urlec%2Fr6KezgcsH5SyJ3fe19wf8Q9o%3D&az=oaivgprodscus" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="http://www.topsarabia.com/wp-content/uploads/2020/10/%D9%85%D8%B5%D9%85%D9%85%D9%8A%D9%86-%D8%A7%D8%B2%D9%8A%D8%A7%D8%A1.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
       </div>
       
@@ -362,41 +362,6 @@
       </div>
     </div>
     
-    <h2 style="text-align: center; margin: 60px 0 30px;">Featured Designers</h2>
-    <div class="designers-grid">
-      <div class="designer-card">
-        <img src="/api/placeholder/180/180" alt="Fashion Designer" class="designer-img">
-        <h3 class="designer-name">Sarah Al-Khalidi</h3>
-        <p class="designer-specialty">Contemporary Fashion</p>
-        <a href="#" class="btn">View Designs</a>
-      </div>
-      <div class="designer-card">
-        <img src="/api/placeholder/180/180" alt="Fashion Designer" class="designer-img">
-        <h3 class="designer-name">Lina Al-Amri</h3>
-        <p class="designer-specialty">Classic Fashion</p>
-        <a href="#" class="btn">View Designs</a>
-      </div>
-      <div class="designer-card">
-        <img src="/api/placeholder/180/180" alt="Fashion Designer" class="designer-img">
-        <h3 class="designer-name">Rima Al-Saadi</h3>
-        <p class="designer-specialty">Conservative Fashion</p>
-        <a href="#" class="btn">View Designs</a>
-      </div>
-      <div class="designer-card">
-        <img src="/api/placeholder/180/180" alt="Fashion Designer" class="designer-img">
-        <h3 class="designer-name">Noor Al-Hashimi</h3>
-        <p class="designer-specialty">Occasion Wear</p>
-        <a href="#" class="btn">View Designs</a>
-      </div>
-    </div>
-    
-    <div class="cta-section">
-      <h2>Join Us</h2>
-      <p>Are you a creative fashion designer? Join our platform and start showcasing your creations to the world</p>
-      <a href="#" class="btn">Register as Designer</a>
-    </div>
-  </div>
-  
   <footer>
     <div class="container">
       <p>All Rights Reserved &copy; 2025 - Fashion Design Platform</p>

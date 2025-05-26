@@ -1,15 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+        
+        .page-title {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .page-title p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            text-align: left;
+        }
+        
+        .alert-success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        
         .cart-container {
             display: flex;
             gap: 30px;
             margin-top: 30px;
+            flex-direction: row;
         }
         
         .cart-items {
@@ -24,6 +68,7 @@
             padding: 20px;
             margin-bottom: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            flex-direction: row;
         }
         
         .item-image {
@@ -43,6 +88,7 @@
         
         .item-details {
             flex: 1;
+            text-align: left;
         }
         
         .item-name {
@@ -61,6 +107,7 @@
             display: flex;
             gap: 15px;
             margin-bottom: 8px;
+            justify-content: flex-start;
         }
         
         .item-size, .item-category {
@@ -74,6 +121,8 @@
         .item-price {
             display: flex;
             align-items: center;
+            margin-bottom: 8px;
+            justify-content: flex-start;
         }
         
         .original-price {
@@ -100,22 +149,28 @@
         }
         
         .quantity-btn {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             background-color: #f9f9f9;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .quantity-btn:hover {
+            background-color: #efefef;
         }
         
         .quantity-input {
-            width: 40px;
-            height: 32px;
+            width: 50px;
+            height: 36px;
             border: none;
             text-align: center;
             -moz-appearance: textfield;
+            font-size: 16px;
         }
         
         .quantity-input::-webkit-outer-spin-button,
@@ -137,15 +192,23 @@
         }
         
         .remove-btn {
+            width: 36px;
+            height: 36px;
             background: none;
-            border: none;
+            border: 1px solid #eee;
+            border-radius: 50%;
             color: #999;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .remove-btn:hover {
             color: #ff5b79;
+            border-color: #ff5b79;
+            background-color: #fff0f3;
         }
         
         .cart-summary {
@@ -160,6 +223,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 100px;
+            text-align: left;
         }
         
         .summary-card h3 {
@@ -174,6 +238,7 @@
             justify-content: space-between;
             margin-bottom: 15px;
             font-size: 16px;
+            flex-direction: row;
         }
         
         .summary-row.total {
@@ -186,30 +251,6 @@
         
         .summary-row.discount {
             color: #4CAF50;
-        }
-        
-        .coupon-form {
-            margin: 20px 0;
-        }
-        
-        .coupon-form .form-group {
-            display: flex;
-        }
-        
-        .coupon-form input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px 0 0 4px;
-        }
-        
-        .coupon-form button {
-            padding: 10px 15px;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
         }
         
         .checkout-actions {
@@ -229,6 +270,8 @@
             margin-bottom: 15px;
             text-decoration: none;
             transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 16px;
         }
         
         .checkout-btn:hover {
@@ -240,20 +283,7 @@
             text-align: center;
             color: #333;
             text-decoration: none;
-        }
-        
-        .empty-cart {
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .clear-cart-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: underline;
+            padding: 10px;
         }
         
         .empty-cart-message {
@@ -292,7 +322,6 @@
             background-color: #e04466;
         }
         
-        /* Toast notification styles */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -306,6 +335,7 @@
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 9999;
+            font-size: 14px;
         }
 
         .toast.show {
@@ -321,7 +351,6 @@
             background-color: #F44336;
         }
 
-        /* Loading spinner */
         .loading-spinner {
             display: none;
             position: fixed;
@@ -347,13 +376,96 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+        
+        /* Checkout form styles */
+        .checkout-form {
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .checkout-form h3 {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            border-color: #ff5b79;
+            outline: none;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn-submit {
+            background-color: #ff5b79;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-submit:hover {
+            background-color: #e04466;
+        }
+        
+        .btn-cancel {
+            background-color: #f2f2f2;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #e6e6e6;
+        }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         
-        /* Responsive styles */
         @media (max-width: 992px) {
             .cart-container {
                 flex-direction: column;
@@ -376,7 +488,7 @@
             
             .item-quantity {
                 order: 3;
-                margin: 15px 0 0 140px;
+                margin: 15px 0 0 0;
             }
             
             .item-total {
@@ -388,44 +500,11 @@
                 order: 5;
                 margin: 15px 0 0 15px;
             }
-        }
-        
-        @media (max-width: 480px) {
-            .item-quantity {
-                margin-left: 0;
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
             }
-        }
-
-        /* Additional styles */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        
-        .page-title {
-            margin-bottom: 30px;
-        }
-        
-        .page-title h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .page-title p {
-            color: #666;
-            font-size: 16px;
-        }
-        
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .alert-success {
-            background-color: #dff0d8;
-            color: #3c763d;
         }
     </style>
 </head>
@@ -436,98 +515,133 @@
             <p>Review your items and proceed to checkout</p>
         </div>
 
-        <!-- Success message would appear here -->
-        <div class="alert alert-success" style="display: none;" id="successMessage"></div>
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
-        <!-- Cart items section - this would be populated dynamically -->
+        <div class="alert alert-success" id="successAlert" style="display: none;"></div>
+
         <div class="cart-container">
-            <div class="cart-items">
-                <!-- Example cart item - in a real app these would be generated from your data -->
-                <div class="cart-item" id="cart-item-1">
-                    <div class="item-image">
-                        <img src="/api/placeholder/120/120" alt="Product Name">
-                    </div>
-                    <div class="item-details">
-                        <h3 class="item-name">Product Name</h3>
-                        <p class="item-designer">By Designer Name</p>
-                        <div class="item-meta">
-                            <span class="item-size">Size: M</span>
-                            <span class="item-category">Category Name</span>
-                        </div>
-                        <div class="item-price">
-                            <span class="original-price">$99.99</span>
-                            <span class="discount-price">$79.99</span>
-                        </div>
-                    </div>
-                    <div class="item-quantity">
-                        <form action="/cart/update/1" method="POST" class="quantity-form">
-                            <input type="hidden" name="_token" value="csrf_token_placeholder">
-                            <input type="hidden" name="_method" value="PATCH">
-                            <div class="quantity-controls">
-                                <button type="button" class="quantity-btn minus" onclick="decrementQuantity(this)">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="number" name="quantity" value="1" min="1" max="10" class="quantity-input">
-                                <button type="button" class="quantity-btn plus" onclick="incrementQuantity(this)">
-                                    <i class="fas fa-plus"></i>
+            <div class="cart-items" id="cartItemsContainer">
+                @if(count($products) > 0)
+                    @foreach($products as $item)
+                        @php
+                            $designerName = is_object($item['product']->designer) ? $item['product']->designer->name : $item['product']->designer;
+                            $categoryName = is_object($item['product']->category) ? $item['product']->category->name : $item['product']->category;
+                            $hasDiscount = $item['product']->hasDiscount();
+                            $priceToShow = $hasDiscount ? $item['product']->discounted_price : $item['product']->price;
+                        @endphp
+                        <div class="cart-item" id="cart-item-{{ $item['product']->id }}-{{ $item['size'] }}">
+                            <div class="item-image">
+                                <img src="{{ $item['product']->image ? asset('storage/'.$item['product']->image) : '/api/placeholder/120/120' }}" alt="{{ $item['product']->name }}">
+                            </div>
+                            <div class="item-details">
+                                <h3 class="item-name">{{ $item['product']->name }}</h3>
+                                <p class="item-designer">By {{ $designerName }}</p>
+                                <div class="item-meta">
+                                    <span class="item-category">{{ $categoryName }}</span>
+                                    <span class="item-size">Size: {{ $item['size'] }}</span>
+                                </div>
+                                <div class="item-price">
+                                    @if($hasDiscount)
+                                        <span class="discount-price">${{ number_format($priceToShow, 2) }}</span>
+                                        <span class="original-price">${{ number_format($item['product']->price, 2) }}</span>
+                                    @else
+                                        ${{ number_format($priceToShow, 2) }}
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="item-total">
+                                $<span class="item-total-value">{{ number_format($priceToShow * $item['quantity'], 2) }}</span>
+                            </div>
+                            <div class="item-quantity">
+                                <div class="quantity-controls">
+                                    <button type="button" class="quantity-btn minus" onclick="decrementQuantity('{{ $item['product']->id }}-{{ $item['size'] }}')">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" max="10" class="quantity-input" data-item-id="{{ $item['product']->id }}-{{ $item['size'] }}" onchange="quantityChanged('{{ $item['product']->id }}-{{ $item['size'] }}')">
+                                    <button type="button" class="quantity-btn plus" onclick="incrementQuantity('{{ $item['product']->id }}-{{ $item['size'] }}')">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <button type="button" class="remove-btn" onclick="removeItem('{{ $item['product']->id }}-{{ $item['size'] }}')">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
-                        </form>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="empty-cart-message">
+                        <div class="empty-cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h2>Your Cart is Empty</h2>
+                        <p>It looks like you haven't added any items to your cart yet.</p>
+                        <a href="{{ route('products.index') }}" class="btn-primary">Start Shopping</a>
                     </div>
-                    <div class="item-total">
-                        $<span class="item-total-value">79.99</span>
-                    </div>
-                    <div class="item-actions">
-                        <form action="/cart/remove/1" method="POST" class="remove-form">
-                            <input type="hidden" name="_token" value="csrf_token_placeholder">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="remove-btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                @endif
             </div>
-            
-            <div class="cart-summary">
+
+            @if(count($products) > 0)
+            <div class="cart-summary" id="cartSummary">
                 <div class="summary-card">
-                    <h3>Order Summary</h3>
+                    <h3>Cart Summary</h3>
                     <div class="summary-row">
                         <span>Subtotal</span>
-                        <span class="cart-subtotal">$79.99</span>
+                        <span class="cart-subtotal">${{ number_format($subtotal, 2) }}</span>
                     </div>
-                    <div class="summary-row">
-                        <span>Shipping</span>
-                        <span>Calculated at checkout</span>
-                    </div>
+                    @if($discount > 0)
+                        <div class="summary-row discount" id="discountRow">
+                            <span>Discount</span>
+                            <span class="discount-amount">-${{ number_format($discount, 2) }}</span>
+                        </div>
+                    @endif
                     <div class="summary-row total">
                         <span>Total</span>
-                        <span class="cart-total">$79.99</span>
+                        <span class="cart-total">${{ number_format($total, 2) }}</span>
                     </div>
-                    
-                    <div class="coupon-form">
-                        <form action="/coupon/apply" method="POST">
-                            <input type="hidden" name="_token" value="csrf_token_placeholder">
-                            <div class="form-group">
-                                <input type="text" name="coupon_code" placeholder="Promo code" class="form-control">
-                                <button type="submit">Apply</button>
-                            </div>
-                        </form>
-                    </div>
-                    
                     <div class="checkout-actions">
-                        <a href="/checkout" class="checkout-btn">Proceed to Checkout</a>
-                        <a href="/products" class="continue-shopping">Continue Shopping</a>
-                    </div>
-                    
-                    <div class="empty-cart">
-                        <form action="/cart/clear" method="POST" id="clear-cart-form">
-                            <input type="hidden" name="_token" value="csrf_token_placeholder">
-                            <button type="submit" class="clear-cart-btn">Clear Cart</button>
-                        </form>
+                        <button id="checkoutButton" class="checkout-btn">Proceed to Checkout</button>
+                        <a href="{{ route('products.index') }}" class="continue-shopping">Continue Shopping</a>
                     </div>
                 </div>
             </div>
+            @endif
+        </div>
+
+        <!-- Checkout Form -->
+        <div class="checkout-form" id="checkoutForm">
+            <h3>Complete Your Purchase</h3>
+            <form id="paymentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Shipping Address</label>
+                    <textarea id="address" class="form-control" rows="3" required></textarea>
+                </div>
+                <div style="text-align: left; margin-top: 20px;">
+                    <button type="button" id="cancelCheckout" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Complete Purchase</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -540,239 +654,313 @@
     <div class="toast" id="toastNotification"></div>
 
     <script>
-        // Function to show toast notification
+        // DOM elements
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        const cartSummary = document.getElementById('cartSummary');
+        const checkoutForm = document.getElementById('checkoutForm');
+        const checkoutButton = document.getElementById('checkoutButton');
+        const cancelCheckoutButton = document.getElementById('cancelCheckout');
+        const paymentForm = document.getElementById('paymentForm');
+        const discountRow = document.getElementById('discountRow');
+        const successAlert = document.getElementById('successAlert');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+        // Show toast notification
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toastNotification');
             toast.textContent = message;
-            toast.className = `toast show ${type}`;
-            
+            toast.className = 'toast show ' + type;
             setTimeout(() => {
                 toast.className = 'toast';
             }, 3000);
         }
 
-        // Function to show loading spinner
+        // Toggle loading spinner
         function showLoading(show) {
             const spinner = document.getElementById('loadingSpinner');
-            spinner.className = show ? 'loading-spinner active' : 'loading-spinner';
+            spinner.style.display = show ? 'flex' : 'none';
         }
         
-        // Increment quantity
-        function incrementQuantity(button) {
-            const input = button.parentElement.querySelector('.quantity-input');
+        // Quantity controls
+        function incrementQuantity(itemId) {
+            const input = document.querySelector(`input[data-item-id="${itemId}"]`);
             const newValue = parseInt(input.value) + 1;
+            
             if (newValue <= parseInt(input.max)) {
                 input.value = newValue;
-                updateCart(button.closest('.quantity-form'));
+                updateItemQuantity(itemId, newValue);
             }
         }
         
-        // Decrement quantity
-        function decrementQuantity(button) {
-            const input = button.parentElement.querySelector('.quantity-input');
+        function decrementQuantity(itemId) {
+            const input = document.querySelector(`input[data-item-id="${itemId}"]`);
             const newValue = parseInt(input.value) - 1;
+            
             if (newValue >= parseInt(input.min)) {
                 input.value = newValue;
-                updateCart(button.closest('.quantity-form'));
+                updateItemQuantity(itemId, newValue);
             }
         }
         
-        // Update cart quantity
-        function updateCart(form) {
-            const formData = new FormData(form);
-            const cartItemId = form.closest('.cart-item').id.replace('cart-item-', '');
+        function quantityChanged(itemId) {
+            const input = document.querySelector(`input[data-item-id="${itemId}"]`);
+            const newValue = parseInt(input.value);
             
+            if (newValue >= parseInt(input.min) && newValue <= parseInt(input.max)) {
+                updateItemQuantity(itemId, newValue);
+            } else {
+                // Reset to valid value
+                const item = document.getElementById(`cart-item-${itemId}`);
+                const currentValue = item.querySelector('.quantity-input').value;
+                input.value = currentValue;
+                showToast('Please enter a valid quantity between 1 and 10', 'error');
+            }
+        }
+        
+        // Update item quantity
+        function updateItemQuantity(itemId, quantity) {
             showLoading(true);
             
-            fetch(`/cart/update/${cartItemId}`, {
+            fetch('/cart/update', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
-                body: formData
+                body: JSON.stringify({
+                    key: itemId,
+                    quantity: quantity
+                })
             })
             .then(response => response.json())
             .then(data => {
                 showLoading(false);
                 
                 if (data.status === 'success') {
-                    // Update item total
-                    const itemTotalElement = form.closest('.cart-item').querySelector('.item-total-value');
-                    itemTotalElement.textContent = data.itemTotal;
+                    // Update item total in DOM
+                    const itemTotalElement = document.querySelector(`#cart-item-${itemId} .item-total-value`);
+                    itemTotalElement.textContent = parseFloat(data.itemTotal).toFixed(2);
                     
                     // Update cart totals
-                    document.querySelector('.cart-subtotal').textContent = '$' + data.cartTotal;
-                    document.querySelector('.cart-total').textContent = '$' + data.cartTotal;
+                    document.querySelector('.cart-subtotal').textContent = '$' + parseFloat(data.subtotal).toFixed(2);
+                    document.querySelector('.cart-total').textContent = '$' + parseFloat(data.cartTotal).toFixed(2);
                     
-                    // Update cart count in header
-                    const cartCount = document.getElementById('cartCount');
-                    if (cartCount) {
-                        cartCount.textContent = data.cartCount;
+                    // Update discount if exists
+                    const discountElement = document.querySelector('.discount-amount');
+                    if (data.discount > 0 && discountElement) {
+                        discountElement.textContent = '-$' + parseFloat(data.discount).toFixed(2);
+                        if (discountRow) discountRow.style.display = 'flex';
+                    } else if (discountRow) {
+                        discountRow.style.display = 'none';
                     }
                     
                     showToast('Cart updated successfully');
                 } else {
-                    showToast(data.message || 'An error occurred', 'error');
+                    showToast(data.message || 'Error updating cart', 'error');
+                    // Reset to original value
+                    const input = document.querySelector(`input[data-item-id="${itemId}"]`);
+                    input.value = data.originalQuantity || quantity - 1;
                 }
             })
             .catch(error => {
                 showLoading(false);
-                showToast('An error occurred. Please try again.', 'error');
+                showToast('Error updating cart', 'error');
                 console.error('Error:', error);
             });
         }
         
-        // Delete item from cart
-        document.addEventListener('DOMContentLoaded', function() {
-            const removeForms = document.querySelectorAll('.remove-form');
-            
-            removeForms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    if (confirm('Are you sure you want to remove this item from your cart?')) {
-                        const cartItem = this.closest('.cart-item');
-                        
-                        showLoading(true);
-                        
-                        fetch(this.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Accept': 'application/json'
-                            },
-                            body: new FormData(this)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            showLoading(false);
-                            
-                            if (data.status === 'success') {
-                                // Remove item from DOM
-                                cartItem.remove();
-                                
-                                // Update cart totals
-                                document.querySelector('.cart-subtotal').textContent = '$' + data.cartTotal;
-                                document.querySelector('.cart-total').textContent = '$' + data.cartTotal;
-                                
-                                // Update cart count in header
-                                const cartCount = document.getElementById('cartCount');
-                                if (cartCount) {
-                                    if (data.cartCount > 0) {
-                                        cartCount.textContent = data.cartCount;
-                                    } else {
-                                        cartCount.textContent = '';
-                                        // Reload to show empty cart message
-                                        window.location.reload();
-                                    }
-                                }
-                                
-                                showToast('Item removed from cart');
-                            } else {
-                                showToast(data.message || 'An error occurred', 'error');
-                            }
-                        })
-                        .catch(error => {
-                            showLoading(false);
-                            showToast('An error occurred. Please try again.', 'error');
-                            console.error('Error:', error);
-                        });
-                    }
-                });
-            });
-            
-            // Clear cart
-            const clearCartForm = document.getElementById('clear-cart-form');
-            if (clearCartForm) {
-                clearCartForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    if (confirm('Are you sure you want to clear your cart? This will remove all items.')) {
-                        showLoading(true);
-                        
-                        fetch(this.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Accept': 'application/json'},
-                            body: new FormData(this)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            showLoading(false);
-                            
-                            if (data.status === 'success') {
-                                showToast('Cart cleared successfully');
-                                
-                                // Update cart count in header
-                                const cartCount = document.getElementById('cartCount');
-                                if (cartCount) {
-                                    cartCount.textContent = '';
-                                }
-                                
-                                // Reload page to show empty cart message
-                                window.location.reload();
-                            } else {
-                                showToast(data.message || 'An error occurred', 'error');
-                            }
-                        })
-                        .catch(error => {
-                            showLoading(false);
-                            showToast('An error occurred. Please try again.', 'error');
-                            console.error('Error:', error);
-                        });
-                    }
-                });
-            }
-            
-            // Apply coupon
-            const couponForm = document.querySelector('.coupon-form form');
-            if (couponForm) {
-                couponForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(this);
-                    
-                    showLoading(true);
-                    
-                    fetch(this.action, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        },
-                        body: formData
+        // Remove item from cart
+        function removeItem(itemId) {
+            if (confirm('Are you sure you want to remove this item from your cart?')) {
+                showLoading(true);
+                
+                fetch('/cart/remove', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        key: itemId
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        showLoading(false);
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showLoading(false);
+                    
+                    if (data.status === 'success') {
+                        // Remove item from DOM
+                        const cartItem = document.getElementById(`cart-item-${itemId}`);
+                        cartItem.remove();
                         
-                        if (data.status === 'success') {
-                            showToast('Coupon applied successfully');
-                            // Reload page to update totals with coupon
-                            window.location.reload();
-                        } else {
-                            showToast(data.message || 'Invalid coupon code', 'error');
+                        // Update cart totals
+                        document.querySelector('.cart-subtotal').textContent = '$' + parseFloat(data.subtotal).toFixed(2);
+                        document.querySelector('.cart-total').textContent = '$' + parseFloat(data.cartTotal).toFixed(2);
+                        
+                        // Update discount if exists
+                        const discountElement = document.querySelector('.discount-amount');
+                        if (data.discount > 0 && discountElement) {
+                            discountElement.textContent = '-$' + parseFloat(data.discount).toFixed(2);
+                            if (discountRow) discountRow.style.display = 'flex';
+                        } else if (discountRow) {
+                            discountRow.style.display = 'none';
                         }
-                    })
-                    .catch(error => {
-                        showLoading(false);
-                        showToast('An error occurred. Please try again.', 'error');
-                        console.error('Error:', error);
-                    });
+                        
+                        // Check if cart is empty
+                        if (data.cartCount === 0) {
+                            showEmptyCart();
+                        }
+                        
+                        showToast('Item removed from cart');
+                    } else {
+                        showToast(data.message || 'Error removing item', 'error');
+                    }
+                })
+                .catch(error => {
+                    showLoading(false);
+                    showToast('Error removing item', 'error');
+                    console.error('Error:', error);
                 });
             }
-
-            // Display success message if URL has success parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('success')) {
-                const successMessage = document.getElementById('successMessage');
-                successMessage.textContent = urlParams.get('success');
-                successMessage.style.display = 'block';
+        }
+        
+        // Show empty cart message
+        function showEmptyCart() {
+            const emptyCartMessage = document.createElement('div');
+            emptyCartMessage.className = 'empty-cart-message';
+            emptyCartMessage.innerHTML = `
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h2>Your Cart is Empty</h2>
+                <p>It looks like you haven't added any items to your cart yet.</p>
+                <a href="{{ route('products.index') }}" class="btn-primary">Start Shopping</a>
+            `;
+            
+            cartItemsContainer.innerHTML = '';
+            cartItemsContainer.appendChild(emptyCartMessage);
+            if (cartSummary) cartSummary.style.display = 'none';
+        }
+        
+        // Show success message
+        function showSuccessMessage(message) {
+            successAlert.textContent = message;
+            successAlert.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Checkout process
+        function handleCheckout() {
+            if (cartSummary) cartSummary.style.display = 'none';
+            checkoutForm.style.display = 'block';
+            
+            // Scroll to checkout form
+            checkoutForm.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function cancelCheckout() {
+            if (cartSummary) cartSummary.style.display = 'block';
+            checkoutForm.style.display = 'none';
+        }
+        
+        function submitCheckout(event) {
+            event.preventDefault();
+            
+            showLoading(true);
+            
+            // Collect form data
+            const formData = {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value
+            };
+            
+            // API call for payment processing
+            fetch('/checkout', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.status === 'success') {
+                    // Show success message
+                    showSuccessMessage('تم إكمال طلبك بنجاح! سيتم التواصل معك قريباً لتأكيد الطلب.');
+                    
+                    // Hide checkout form
+                    checkoutForm.style.display = 'none';
+                    
+                    // Show empty cart
+                    showEmptyCart();
+                    
+                    // Show toast notification
+                    showToast('Order completed successfully!', 'success');
+                } else {
+                    showToast(data.message || 'Error processing order', 'error');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showToast('Error processing order', 'error');
+                console.error('Error:', error);
+            });
+        }
+        
+        // Format credit card number with spaces
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            input.value = formattedValue;
+        }
+        
+        // Format expiry date
+        function formatExpiryDate(input) {
+            let value = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            
+            if (value.length > 2) {
+                input.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            } else {
+                input.value = value;
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Checkout button
+            if (checkoutButton) {
+                checkoutButton.addEventListener('click', handleCheckout);
+            }
+            
+            // Cancel checkout
+            if (cancelCheckoutButton) {
+                cancelCheckoutButton.addEventListener('click', cancelCheckout);
+            }
+            
+            // Submit payment form
+            if (paymentForm) {
+                paymentForm.addEventListener('submit', submitCheckout);
             }
         });
     </script>

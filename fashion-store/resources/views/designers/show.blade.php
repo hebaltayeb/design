@@ -4,82 +4,140 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ $designer->name }} - Fashion Designer Profile</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body {
-      font-family: 'Poppins', 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
+    * {
       margin: 0;
       padding: 0;
-      color: #333;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background-color: #f8f9fa;
+      color: #2c3e50;
       line-height: 1.6;
     }
     
     .container {
+      width: 90%;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
     }
     
+    /* Header Styles */
     header {
-      background-color: white;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       position: fixed;
       width: 100%;
       z-index: 1000;
-      top: 0;
+      background-color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 20px rgba(196, 69, 105, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    header.scrolled {
+      background-color: #fff;
+      box-shadow: 0 6px 30px rgba(196, 69, 105, 0.15);
     }
     
     .header-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 5%;
+      padding: 18px 0;
     }
     
     .logo {
-      font-size: 24px;
-      font-weight: 700;
-      color: #000;
+      font-size: 32px;
+      font-weight: 300;
+      color: #2c3e50;
       text-decoration: none;
+      letter-spacing: 1px;
     }
     
     .logo span {
-      color: #ffd1dc;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     nav ul {
       display: flex;
       list-style: none;
-      margin: 0;
-      padding: 0;
     }
     
     nav ul li {
-      margin: 0 15px;
+      margin: 0 20px;
     }
     
     nav ul li a {
       text-decoration: none;
-      color: #333;
+      color: #2c3e50;
       font-size: 16px;
+      font-weight: 500;
       transition: all 0.3s ease;
+      position: relative;
+      padding: 8px 0;
     }
     
-    nav ul li a:hover {
-      color: #ffd1dc;
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: #c44569;
     }
     
-    .designer-header {
-      padding-top: 80px;
-      margin-bottom: 50px;
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      bottom: 0;
+      left: 0;
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+    
+    nav ul li a:hover::after,
+    nav ul li a.active::after {
+      width: 100%;
+    }
+    
+    .header-icons {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    
+    .icon-btn {
+      color: #2c3e50;
+      font-size: 20px;
+      position: relative;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      padding: 8px;
+      border-radius: 50%;
+    }
+    
+    .icon-btn:hover {
+      color: #c44569;
+      background: rgba(255, 107, 157, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb-section {
+      padding: 120px 0 30px;
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, rgba(196, 69, 105, 0.05) 100%);
     }
     
     .breadcrumb {
-      margin-bottom: 20px;
       display: flex;
       align-items: center;
+      color: #666;
+      font-size: 14px;
     }
     
     .breadcrumb a {
@@ -89,191 +147,258 @@
     }
     
     .breadcrumb a:hover {
-      color: #ffd1dc;
+      color: #c44569;
     }
     
     .breadcrumb .separator {
-      margin: 0 10px;
+      margin: 0 12px;
       color: #ccc;
     }
     
     .breadcrumb .current {
-      color: #000;
+      color: #2c3e50;
+      font-weight: 500;
     }
     
+    /* Designer Profile */
     .designer-profile {
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
       overflow: hidden;
+      box-shadow: 0 20px 60px rgba(196, 69, 105, 0.1);
+      margin-bottom: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .profile-banner {
-      height: 300px;
-      background-color: #f0f0f0;
+      height: 350px;
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.8) 0%, rgba(196, 69, 105, 0.8) 100%);
       position: relative;
       overflow: hidden;
+    }
+    
+    .profile-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('/api/placeholder/1200/350') center/cover;
+      opacity: 0.3;
     }
     
     .profile-banner img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      opacity: 0.3;
+    }
+    
+    .featured-badge {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      color: #c44569;
+      padding: 12px 25px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
     
     .profile-info {
       display: flex;
-      padding: 0 30px 30px;
+      padding: 0 40px 40px;
       position: relative;
+      align-items: flex-start;
     }
     
     .profile-avatar {
-      width: 150px;
-      height: 150px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
-      border: 5px solid white;
+      border: 6px solid white;
       position: relative;
-      margin-top: -75px;
-      background-color: white;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-top: -90px;
+      background: white;
+      box-shadow: 0 15px 40px rgba(196, 69, 105, 0.2);
+      overflow: hidden;
     }
     
     .profile-avatar img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 50%;
     }
     
     .profile-details {
-      padding-left: 30px;
+      padding-left: 40px;
       flex: 1;
+      padding-top: 20px;
     }
     
     .profile-name {
-      font-size: 28px;
-      font-weight: 500;
-      margin-bottom: 5px;
+      font-size: 36px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2c3e50;
     }
     
     .profile-specialty {
-      color: #666;
-      margin-bottom: 15px;
-      font-size: 16px;
+      color: #c44569;
+      margin-bottom: 20px;
+      font-size: 18px;
+      font-weight: 500;
     }
     
     .profile-bio {
       color: #666;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       line-height: 1.8;
+      font-size: 16px;
+      max-width: 600px;
     }
     
     .profile-stats {
       display: flex;
-      gap: 30px;
-      margin-bottom: 20px;
+      gap: 40px;
+      margin-bottom: 30px;
     }
     
     .profile-stat {
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 20px;
+      background: rgba(255, 107, 157, 0.05);
+      border-radius: 15px;
+      min-width: 120px;
     }
     
     .stat-count {
-      font-size: 24px;
-      font-weight: 500;
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .stat-label {
       font-size: 14px;
-      color: #999;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+      font-weight: 500;
     }
     
     .profile-social {
       display: flex;
-      gap: 15px;
+      gap: 20px;
     }
     
     .profile-social a {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      background-color: #f5f5f5;
-      color: #666;
+      background: rgba(255, 107, 157, 0.1);
+      color: #c44569;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
-      font-size: 18px;
+      font-size: 20px;
+      text-decoration: none;
     }
     
     .profile-social a:hover {
-      background-color: #000;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
       color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(196, 69, 105, 0.3);
     }
     
     .follow-button {
       position: absolute;
-      right: 30px;
-      top: 30px;
-      background-color: #000;
+      right: 40px;
+      top: 40px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
       color: white;
-      padding: 10px 25px;
-      border-radius: 30px;
+      padding: 15px 35px;
+      border-radius: 50px;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: 600;
       transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 8px 25px rgba(196, 69, 105, 0.3);
     }
     
     .follow-button:hover {
-      background-color: #333;
+      background: linear-gradient(45deg, #c44569, #ff6b9d);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(196, 69, 105, 0.4);
     }
     
     .follow-button.following {
-      background-color: transparent;
-      color: #000;
-      border: 1px solid #000;
+      background: rgba(255, 255, 255, 0.9);
+      color: #c44569;
+      border: 2px solid #c44569;
     }
     
-    .featured-badge {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background-color: #ffd1dc;
-      color: #333;
-      padding: 5px 15px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 500;
+    .follow-button.following:hover {
+      background: #c44569;
+      color: white;
     }
     
+    /* Tabs */
     .tabs-container {
-      margin-top: 50px;
+      margin-top: 40px;
     }
     
     .tabs-navigation {
       display: flex;
-      border-bottom: 1px solid #eee;
-      margin-bottom: 30px;
-      gap: 10px;
+      border-bottom: 2px solid rgba(196, 69, 105, 0.1);
+      margin-bottom: 50px;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 15px 15px 0 0;
+      padding: 10px;
     }
     
     .tab-button {
-      padding: 15px 25px;
+      padding: 18px 30px;
       cursor: pointer;
-      font-weight: 500;
-      border-bottom: 2px solid transparent;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
       transition: all 0.3s ease;
-      background: none;
-      border-top: none;
-      border-left: none;
-      border-right: none;
+      color: #666;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .tab-button.active {
-      border-color: #ffd1dc;
-      color: #000;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(196, 69, 105, 0.3);
+    }
+    
+    .tab-button:hover:not(.active) {
+      background: rgba(255, 107, 157, 0.1);
+      color: #c44569;
     }
     
     .tab-content {
@@ -286,51 +411,56 @@
     }
     
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .section-title {
-      font-size: 24px;
-      font-weight: 500;
-      margin-bottom: 30px;
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 40px;
+      color: #2c3e50;
       position: relative;
-      padding-bottom: 10px;
+      padding-bottom: 15px;
     }
     
-    .section-title:after {
+    .section-title::after {
       content: '';
       position: absolute;
-      width: 60px;
-      height: 2px;
-      background-color: #ffd1dc;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
       bottom: 0;
       left: 0;
+      border-radius: 2px;
     }
     
+    /* Products Grid */
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 30px;
-      margin-bottom: 40px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 40px;
+      margin-bottom: 50px;
     }
     
     .product-card {
-      background-color: white;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
+      box-shadow: 0 15px 40px rgba(196, 69, 105, 0.1);
+      transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .product-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      transform: translateY(-15px);
+      box-shadow: 0 25px 60px rgba(196, 69, 105, 0.2);
     }
     
     .product-image {
       width: 100%;
-      height: 270px;
+      height: 300px;
       overflow: hidden;
       position: relative;
     }
@@ -348,12 +478,12 @@
     
     .product-actions {
       position: absolute;
-      bottom: 15px;
-      right: 15px;
+      bottom: 20px;
+      right: 20px;
       display: flex;
-      gap: 10px;
+      gap: 12px;
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(30px);
       transition: all 0.3s ease;
     }
     
@@ -363,62 +493,68 @@
     }
     
     .product-action {
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
-      background-color: white;
+      background: rgba(255, 255, 255, 0.95);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #333;
+      color: #c44569;
       text-decoration: none;
       transition: all 0.3s ease;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
     }
     
     .product-action:hover {
-      background-color: #000;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
       color: white;
+      transform: scale(1.1);
     }
     
     .discount-badge {
       position: absolute;
-      top: 15px;
-      left: 15px;
-      background-color: #ffd1dc;
-      color: #333;
-      padding: 5px 10px;
-      border-radius: 5px;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .product-info {
-      padding: 20px;
+      padding: 25px;
     }
     
     .product-name {
-      font-size: 16px;
-      font-weight: 500;
-      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #2c3e50;
     }
     
     .product-price {
       display: flex;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     
     .current-price {
-      font-weight: 500;
-      font-size: 18px;
+      font-weight: 600;
+      font-size: 20px;
+      color: #c44569;
     }
     
     .original-price {
       color: #999;
       text-decoration: line-through;
-      margin-left: 10px;
-      font-size: 14px;
+      margin-left: 12px;
+      font-size: 16px;
     }
     
     .product-meta {
@@ -434,59 +570,43 @@
     
     .product-rating span {
       color: #666;
-      margin-left: 5px;
+      margin-left: 8px;
     }
     
     .product-category {
       color: #999;
       font-size: 14px;
+      background: rgba(255, 107, 157, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
     }
     
-    .load-more {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    
-    .load-more-btn {
-      background-color: transparent;
-      color: #000;
-      border: 1px solid #000;
-      padding: 10px 30px;
-      border-radius: 30px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .load-more-btn:hover {
-      background-color: #000;
-      color: white;
-    }
-    
+    /* Courses Grid */
     .courses-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 30px;
-      margin-bottom: 40px;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 40px;
+      margin-bottom: 50px;
     }
     
     .course-card {
-      background-color: white;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
+      box-shadow: 0 15px 40px rgba(196, 69, 105, 0.1);
+      transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .course-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      transform: translateY(-15px);
+      box-shadow: 0 25px 60px rgba(196, 69, 105, 0.2);
     }
     
     .course-image {
       width: 100%;
-      height: 200px;
+      height: 220px;
       overflow: hidden;
     }
     
@@ -502,37 +622,41 @@
     }
     
     .course-info {
-      padding: 20px;
+      padding: 25px;
     }
     
     .course-category {
       display: inline-block;
-      background-color: #f0f0f0;
-      padding: 5px 15px;
-      border-radius: 30px;
+      background: linear-gradient(45deg, rgba(255, 107, 157, 0.2), rgba(196, 69, 105, 0.2));
+      color: #c44569;
+      padding: 8px 18px;
+      border-radius: 20px;
       font-size: 12px;
-      color: #666;
+      font-weight: 600;
       margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .course-title {
-      font-size: 18px;
-      font-weight: 500;
+      font-size: 20px;
+      font-weight: 600;
       margin-bottom: 15px;
       line-height: 1.4;
+      color: #2c3e50;
     }
     
     .course-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 15px;
-      border-top: 1px solid #eee;
+      padding-top: 20px;
+      border-top: 2px solid rgba(196, 69, 105, 0.1);
     }
     
     .course-stats {
       display: flex;
-      gap: 15px;
+      gap: 20px;
       color: #666;
       font-size: 14px;
     }
@@ -543,72 +667,82 @@
     }
     
     .course-stat i {
-      margin-right: 5px;
+      margin-right: 8px;
+      color: #c44569;
     }
     
     .course-price {
-      font-weight: 500;
-      font-size: 18px;
+      font-weight: 600;
+      font-size: 20px;
+      color: #c44569;
     }
     
+    /* Events List */
     .events-list {
-      margin-bottom: 40px;
+      margin-bottom: 50px;
     }
     
     .event-card {
-      background-color: white;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      margin-bottom: 20px;
+      box-shadow: 0 15px 40px rgba(196, 69, 105, 0.1);
+      margin-bottom: 30px;
       display: flex;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .event-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      transform: translateY(-8px);
+      box-shadow: 0 25px 60px rgba(196, 69, 105, 0.2);
     }
     
     .event-date {
-      width: 100px;
-      background-color: #000;
+      width: 120px;
+      background: linear-gradient(135deg, #ff6b9d, #c44569);
       color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 25px;
     }
     
     .event-day {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
     }
     
     .event-month {
       font-size: 14px;
       text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
     }
     
     .event-year {
       font-size: 14px;
+      opacity: 0.9;
     }
     
     .event-info {
       flex: 1;
-      padding: 20px;
+      padding: 25px;
     }
     
     .event-title {
-      font-size: 18px;
-      font-weight: 500;
-      margin-bottom: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #2c3e50;
     }
     
     .event-details {
       color: #666;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      line-height: 1.6;
     }
     
     .event-location {
@@ -619,68 +753,83 @@
     }
     
     .event-location i {
-      margin-right: 10px;
-      color: #ffd1dc;
+      margin-right: 12px;
+      color: #c44569;
     }
     
     .event-action {
       margin-left: auto;
       display: flex;
       align-items: center;
+      padding: 25px;
     }
     
     .event-button {
-      background-color: #ffd1dc;
-      color: #333;
-      padding: 10px 25px;
-      border-radius: 30px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 50px;
       text-decoration: none;
       font-size: 14px;
+      font-weight: 600;
       transition: all 0.3s ease;
-      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .event-button:hover {
-      background-color: #ffb6c1;
+      background: linear-gradient(45deg, #c44569, #ff6b9d);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(196, 69, 105, 0.3);
     }
     
+    /* Gallery Grid */
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 50px;
     }
     
     .gallery-item {
-      border-radius: 8px;
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
+      box-shadow: 0 15px 40px rgba(196, 69, 105, 0.1);
+      transition: all 0.4s ease;
       cursor: pointer;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
     }
     
     .gallery-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      transform: translateY(-10px);
+      box-shadow: 0 25px 60px rgba(196, 69, 105, 0.2);
     }
     
     .gallery-image {
       width: 100%;
-      height: 220px;
+      height: 250px;
       object-fit: cover;
+      transition: transform 0.5s ease;
     }
     
+    .gallery-item:hover .gallery-image {
+      transform: scale(1.05);
+    }
+    
+    /* Contact Section */
     .contact-section {
-      background-color: #f5f5f5;
-      border-radius: 8px;
-      padding: 30px;
-      margin-bottom: 40px;
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, rgba(196, 69, 105, 0.05) 100%);
+      border-radius: 25px;
+      padding: 50px;
+      margin-bottom: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .contact-form {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 25px;
     }
     
     .contact-form .form-group:last-child {
@@ -688,56 +837,95 @@
     }
     
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     
     .form-group label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2c3e50;
     }
     
     .form-group input,
     .form-group textarea {
       width: 100%;
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+      padding: 15px 20px;
+      border: 2px solid rgba(196, 69, 105, 0.1);
+      border-radius: 15px;
       transition: all 0.3s ease;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
     }
     
     .form-group input:focus,
     .form-group textarea:focus {
       outline: none;
-      border-color: #ffd1dc;
-      box-shadow: 0 0 10px rgba(255, 209, 220, 0.2);
+      border-color: #c44569;
+      box-shadow: 0 0 20px rgba(196, 69, 105, 0.2);
+      background: white;
     }
     
     .form-group textarea {
-      height: 120px;
+      height: 140px;
       resize: vertical;
     }
     
     .submit-btn {
-      background-color: #000;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
       color: white;
-      padding: 12px 30px;
+      padding: 18px 40px;
       border: none;
-      border-radius: 30px;
+      border-radius: 50px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: 600;
       transition: all 0.3s ease;
-      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .submit-btn:hover {
-      background-color: #333;
+      background: linear-gradient(45deg, #c44569, #ff6b9d);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(196, 69, 105, 0.3);
     }
     
-    footer {
-      background-color: #000;
+    /* Load More Button */
+    .load-more {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+    
+    .load-more-btn {
+      background: rgba(255, 255, 255, 0.9);
+      color: #c44569;
+      border: 2px solid #c44569;
+      padding: 15px 40px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .load-more-btn:hover {
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
       color: white;
-      padding: 60px 0 20px;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(196, 69, 105, 0.3);
+    }
+    
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      color: #ecf0f1;
+      padding: 80px 0 30px;
       margin-top: 100px;
     }
     
@@ -745,30 +933,37 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 40px;
-      margin-bottom: 40px;
+      margin-bottom: 50px;
     }
     
     .footer-column {
       flex: 1;
-      min-width: 240px;
+      min-width: 250px;
+      margin-bottom: 40px;
     }
     
     .footer-logo {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: 300;
+      margin-bottom: 25px;
       display: inline-block;
+      color: white;
+      text-decoration: none;
     }
     
     .footer-logo span {
-      color: #ffd1dc;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .footer-desc {
-      color: #ccc;
-      margin-bottom: 20px;
+      color: #bdc3c7;
+      margin-bottom: 25px;
       line-height: 1.8;
+      font-size: 15px;
     }
     
     .footer-social {
@@ -777,31 +972,38 @@
     }
     
     .footer-social a {
-      color: white;
-      font-size: 18px;
-      transition: color 0.3s ease;
+      color: #bdc3c7;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      padding: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
     }
     
     .footer-social a:hover {
-      color: #ffd1dc;
+      color: #ff6b9d;
+      background: rgba(255, 107, 157, 0.1);
+      transform: translateY(-3px);
     }
     
     .footer-title {
-      font-size: 18px;
-      font-weight: 500;
-      margin-bottom: 20px;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 25px;
       position: relative;
-      padding-bottom: 10px;
+      padding-bottom: 15px;
+      color: white;
     }
     
-    .footer-title:after {
+    .footer-title::after {
       content: '';
       position: absolute;
-      width: 40px;
-      height: 2px;
-      background-color: #ffd1dc;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
       bottom: 0;
       left: 0;
+      border-radius: 2px;
     }
     
     .footer-links {
@@ -811,37 +1013,49 @@
     }
     
     .footer-links li {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     
     .footer-links a {
-      color: #ccc;
+      color: #bdc3c7;
       text-decoration: none;
-      transition: color 0.3s ease;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      padding: 5px 0;
+      display: inline-block;
     }
     
     .footer-links a:hover {
-      color: #ffd1dc;
+      color: #ff6b9d;
+      transform: translateX(5px);
     }
     
     .footer-contact-item {
       display: flex;
       align-items: flex-start;
       margin-bottom: 15px;
-      color: #ccc;
+      color: #bdc3c7;
     }
     
     .footer-contact-icon {
       margin-right: 15px;
-      color: #ffd1dc;
+      color: #ff6b9d;
+      width: 20px;
     }
     
     .footer-bottom {
       text-align: center;
-      padding-top: 20px;
-      border-top: 1px solid #333;
-      color: #ccc;
+      padding-top: 30px;
+      border-top: 1px solid #455a64;
+      color: #95a5a6;
       font-size: 14px;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .container {
+        width: 95%;
+      }
     }
     
     @media (max-width: 992px) {
@@ -853,7 +1067,7 @@
       
       .profile-details {
         padding-left: 0;
-        padding-top: 20px;
+        padding-top: 30px;
       }
       
       .profile-stats {
@@ -868,11 +1082,11 @@
         position: relative;
         right: auto;
         top: auto;
-        margin-top: 20px;
+        margin-top: 30px;
       }
       
       .courses-grid {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       }
       
       .event-card {
@@ -881,31 +1095,58 @@
       
       .event-date {
         width: 100%;
-        display: flex;
         flex-direction: row;
         justify-content: space-around;
-        padding: 10px;
+        padding: 20px;
       }
       
       .event-day, .event-month, .event-year {
-        font-size: 16px;
+        font-size: 18px;
+      }
+      
+      .event-action {
+        padding: 20px 25px;
       }
     }
     
     @media (max-width: 768px) {
+      nav ul {
+        display: none;
+      }
+      
+      .header-icons {
+        display: none;
+      }
+      
+      .profile-name {
+        font-size: 28px;
+      }
+      
+      .profile-stats {
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .profile-stat {
+        min-width: 100px;
+        padding: 15px;
+      }
+      
       .tabs-navigation {
         flex-wrap: wrap;
+        gap: 10px;
       }
       
       .tab-button {
         flex: 1;
-        padding: 10px 15px;
+        padding: 15px 20px;
         font-size: 14px;
         text-align: center;
+        min-width: 120px;
       }
       
       .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       }
       
       .contact-form {
@@ -915,114 +1156,212 @@
       .contact-form .form-group:last-child {
         grid-column: span 1;
       }
+      
+      .contact-section {
+        padding: 30px;
+      }
     }
     
     @media (max-width: 576px) {
       .profile-avatar {
-        width: 120px;
-        height: 120px;
-        margin-top: -60px;
+        width: 140px;
+        height: 140px;
+        margin-top: -70px;
+      }
+      
+      .profile-info {
+        padding: 0 20px 30px;
+      }
+      
+      .profile-details {
+        padding-top: 20px;
       }
       
       .profile-name {
         font-size: 24px;
       }
       
-      .products-grid, .gallery-grid {
+      .section-title {
+        font-size: 24px;
+      }
+      
+      .products-grid, 
+      .gallery-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 20px;
       }
       
       .courses-grid {
         grid-template-columns: 1fr;
       }
+      
+      .tabs-navigation {
+        padding: 5px;
+      }
+      
+      .tab-button {
+        padding: 12px 15px;
+        font-size: 12px;
+      }
+      
+      .contact-section {
+        padding: 20px;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+      }
+    }
+    
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #2c3e50;
+    }
+    
+    @media (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
+    }
+    
+    /* Scroll animations */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-slide-up {
+      animation: slideInUp 0.6s ease forwards;
+    }
+    
+    /* Success Message Styles */
+    .success-message {
+      background: linear-gradient(45deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1));
+      border: 2px solid #4caf50;
+      color: #2e7d32;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .success-message i {
+      color: #4caf50;
+      font-size: 20px;
+      margin-right: 10px;
     }
   </style>
 </head>
 <body>
   <!-- Header -->
   <header>
-    <div class="header-content">
-      <a href="/" class="logo">Ele<span>gance</span></a>
-      <nav>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/products">Products</a></li>
-          <li><a href="/designers">Designers</a></li>
-          <li><a href="/courses">Courses</a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/contact">Contact</a></li>
-        </ul>
-      </nav>
+    <div class="container">
+      <div class="header-content">
+        <a href="/" class="logo">Ele<span>gance</span></a>
+        
+        <nav>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/products">Products</a></li>
+            <li><a href="/designers" class="active">Designers</a></li>
+            <li><a href="/courses">Courses</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </nav>
+        
+        <div class="header-icons">
+          <a href="#" class="icon-btn" title="Favorites">
+            <i class="fas fa-heart"></i>
+            <span class="counter">3</span>
+          </a>
+          <a href="#" class="icon-btn" title="Cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="counter">2</span>
+          </a>
+        </div>
+
+        <button class="mobile-menu-btn">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
     </div>
   </header>
   
-  <div class="container">
-    <div class="designer-header">
-      <div class="breadcrumb">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-section">
+    <div class="container">
+
+
+
+    <div class="breadcrumb">
         <a href="/">Home</a>
         <span class="separator"><i class="fas fa-chevron-right"></i></span>
         <a href="/designers">Designers</a>
         <span class="separator"><i class="fas fa-chevron-right"></i></span>
         <span class="current">{{ $designer->name }}</span>
       </div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <!-- Designer Profile -->
+    <div class="designer-profile">
+      <div class="profile-banner">
+        <img src="/api/placeholder/1200/350" alt="Designer Banner">
+        @if($designer->is_featured)
+        <div class="featured-badge">Featured Designer</div>
+        @endif
+      </div>
       
-      <div class="designer-profile">
-        <div class="profile-banner">
-          <img src="/api/placeholder/1200/300" alt="Designer Banner">
-          @if($designer->is_featured)
-          <div class="featured-badge">Featured Designer</div>
-          @endif
+      <div class="profile-info">
+        <div class="profile-avatar">
+          <img src="{{ $designer->profile_picture ? asset('storage/' . $designer->profile_picture) : '/api/placeholder/180/180' }}" alt="{{ $designer->name }}">
         </div>
         
-        <div class="profile-info">
-          <div class="profile-avatar">
-            <img src="{{ $designer->profile_picture ? asset('storage/' . $designer->profile_picture) : '/api/placeholder/150/150' }}" alt="{{ $designer->name }}">
-          </div>
+        <div class="profile-details">
+          <h1 class="profile-name">{{ $designer->name }}</h1>
+          <p class="profile-specialty">{{ $designer->specialty ?? 'Fashion Designer' }}</p>
+          <p class="profile-bio">{{ $designer->bio ?? 'A passionate fashion designer dedicated to creating timeless and elegant pieces that empower women to express their unique style with confidence.' }}</p>
           
-          <div class="profile-details">
-            <h1 class="profile-name">{{ $designer->name }}</h1>
-            <p class="profile-specialty">{{ $designer->specialty ?? 'Fashion Designer' }}</p>
-            <p class="profile-bio">{{ $designer->bio ?? 'A passionate fashion designer dedicated to creating timeless and elegant pieces that empower women to express their unique style with confidence.' }}</p>
-            
-            <div class="profile-stats">
-              <div class="profile-stat">
-                <span class="stat-count">{{ $designer->products->count() }}</span>
-                <span class="stat-label">Products</span>
-              </div>
-              <div class="profile-stat">
-                <span class="stat-count">{{ $designer->courses->count() }}</span>
-                <span class="stat-label">Courses</span>
-              </div>
-              <div class="profile-stat">
-                <span class="stat-count">{{ $designer->events->count() }}</span>
-                <span class="stat-label">Events</span>
-              </div>
-              <div class="profile-stat">
-                <span class="stat-count">0</span>
-                <span class="stat-label">Followers</span>
-              </div>
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <span class="stat-count">{{ $designer->products->count() }}</span>
+              <span class="stat-label">Products</span>
+            </div>
+            <div class="profile-stat">
+              <span class="stat-count">{{ $designer->courses->count() }}</span>
+              <span class="stat-label">Courses</span>
             </div>
             
-            <div class="profile-social">
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-              <a href="#"><i class="fab fa-facebook-f"></i></a>
-              <a href="#"><i class="fab fa-pinterest"></i></a>
-              <a href="#"><i class="fab fa-youtube"></i></a>
             </div>
           </div>
           
-          <a href="#" class="follow-button">Follow</a>
+          
         </div>
+        
+       
       </div>
     </div>
     
+    <!-- Tabs -->
     <div class="tabs-container">
       <div class="tabs-navigation">
         <button class="tab-button active" data-tab="products">Products</button>
         <button class="tab-button" data-tab="courses">Courses</button>
-        <button class="tab-button" data-tab="events">Upcoming Events</button>
-        <button class="tab-button" data-tab="gallery">Gallery</button>
+        
         <button class="tab-button" data-tab="contact">Contact</button>
       </div>
       
@@ -1034,7 +1373,7 @@
           @foreach($designer->products as $product)
           <div class="product-card">
             <div class="product-image">
-              <img src="{{ $product->image ? asset('storage/' . $product->image) : '/api/placeholder/270/270' }}" alt="{{ $product->name }}">
+              <img src="{{ $product->image ? asset('storage/' . $product->image) : '/api/placeholder/300/300' }}" alt="{{ $product->name }}">
               
               @if($product->hasDiscount())
               <div class="discount-badge">Sale</div>
@@ -1086,7 +1425,7 @@
         
         @if($designer->products->count() > 8)
         <div class="load-more">
-          <button class="load-more-btn">Load More</button>
+          <button class="load-more-btn">Load More Products</button>
         </div>
         @endif
       </div>
@@ -1100,7 +1439,7 @@
           @foreach($designer->courses as $course)
           <div class="course-card">
             <div class="course-image">
-              <img src="{{ $course->image ? asset('storage/' . $course->image) : '/api/placeholder/350/200' }}" alt="{{ $course->title }}">
+              <img src="{{ $course->image ? asset('storage/' . $course->image) : '/api/placeholder/380/220' }}" alt="{{ $course->title }}">
             </div>
             
             <div class="course-info">
@@ -1128,65 +1467,10 @@
           @endforeach
         </div>
         @else
-        <p>This designer hasn't published any courses yet. Check back soon for new learning opportunities!</p>
-        @endif
-      </div>
-      
-      <!-- Events Tab -->
-      <div class="tab-content" id="events-tab">
-        <h2 class="section-title">Upcoming Events</h2>
-        
-        @if($designer->events->count() > 0)
-        <div class="events-list">
-          @foreach($designer->events as $event)
-          <div class="event-card">
-            <div class="event-date">
-              <span class="event-day">{{ $event->event_date->format('d') }}</span>
-              <span class="event-month">{{ $event->event_date->format('M') }}</span>
-              <span class="event-year">{{ $event->event_date->format('Y') }}</span>
-            </div>
-            
-            <div class="event-info">
-              <h3 class="event-title">{{ $event->title }}</h3>
-              <p class="event-details">{{ \Illuminate\Support\Str::limit($event->description, 150) }}</p>
-              
-              <div class="event-location">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>{{ $event->location }}</span>
-              </div>
-            </div>
-            
-            <div class="event-action">
-              <a href="#" class="event-button">Learn More</a>
-            </div>
-          </div>
-          @endforeach
-        </div>
-        @else
-        <p>No upcoming events scheduled. Check back soon for new fashion shows and events!</p>
-        @endif
-      </div>
-      
-      <!-- Gallery Tab -->
-      <div class="tab-content" id="gallery-tab">
-        <h2 class="section-title">Designer Gallery</h2>
-        
-        @if(isset($mediaItems) && $mediaItems->count() > 0)
-        <div class="gallery-grid">
-          @foreach($mediaItems as $media)
-          <div class="gallery-item">
-            <img src="{{ asset('storage/' . $media->media_url) }}" alt="Designer Work" class="gallery-image">
-          </div>
-          @endforeach
-        </div>
-        @else
-        <div class="gallery-grid">
-          <!-- Placeholder gallery items -->
-          @for($i = 1; $i <= 8; $i++)
-          <div class="gallery-item">
-            <img src="/api/placeholder/220/220?text=Gallery+{{ $i }}" alt="Designer Work" class="gallery-image">
-          </div>
-          @endfor
+        <div style="text-align: center; padding: 60px 20px; color: #666;">
+          <i class="fas fa-graduation-cap" style="font-size: 64px; color: #e1e8ed; margin-bottom: 20px;"></i>
+          <h3 style="font-size: 24px; margin-bottom: 10px;">No Courses Yet</h3>
+          <p>This designer hasn't published any courses yet. Check back soon for new learning opportunities!</p>
         </div>
         @endif
       </div>
@@ -1214,7 +1498,7 @@
             
             <div class="form-group">
               <label for="message">Your Message</label>
-              <textarea id="message" name="message" required></textarea>
+              <textarea id="message" name="message" required placeholder="Tell us about your project or inquiry..."></textarea>
             </div>
             
             <div class="form-group">
@@ -1283,98 +1567,140 @@
   </footer>
   
   <script>
-    // Tab navigation functionality
-    document.querySelectorAll('.tab-button').forEach(button => {
-      button.addEventListener('click', function() {
-        // Remove active class from all tabs
-        document.querySelectorAll('.tab-button').forEach(tab => {
-          tab.classList.remove('active');
-        });
-        
-        // Hide all tab content
-        document.querySelectorAll('.tab-content').forEach(content => {
-          content.classList.remove('active');
-        });
-        
-        // Add active class to clicked tab
-        this.classList.add('active');
-        
-        // Show corresponding tab content
-        const tabId = this.getAttribute('data-tab');
-        document.getElementById(tabId + '-tab').classList.add('active');
+    document.addEventListener('DOMContentLoaded', function() {
+      // Header scroll effect
+      window.addEventListener('scroll', function() {
+        const header = document.querySelector('header');
+        if (window.scrollY > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
       });
-    });
-    
-    // Follow button functionality
-    const followButton = document.querySelector('.follow-button');
-    followButton.addEventListener('click', function(e) {
-      e.preventDefault();
+
+      // Tab navigation functionality
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+          // Remove active class from all tabs
+          document.querySelectorAll('.tab-button').forEach(tab => {
+            tab.classList.remove('active');
+          });
+          
+          // Hide all tab content
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          // Add active class to clicked tab
+          this.classList.add('active');
+          
+          // Show corresponding tab content
+          const tabId = this.getAttribute('data-tab');
+          document.getElementById(tabId + '-tab').classList.add('active');
+        });
+      });
       
-      if (this.classList.contains('following')) {
-        this.textContent = 'Follow';
-        this.classList.remove('following');
-      } else {
-        this.textContent = 'Following';
-        this.classList.add('following');
-      }
-    });
-    
-    // Load more products functionality
-    const loadMoreBtn = document.querySelector('.load-more-btn');
-    if (loadMoreBtn) {
-      loadMoreBtn.addEventListener('click', function() {
-        // This would typically be an AJAX request to load more products
-        // For now, we'll just show a message
-        this.textContent = 'Loading...';
+      // Follow button functionality
+      const followButton = document.querySelector('.follow-button');
+      followButton.addEventListener('click', function(e) {
+        e.preventDefault();
         
+        if (this.classList.contains('following')) {
+          this.textContent = 'Follow';
+          this.classList.remove('following');
+        } else {
+          this.textContent = 'Following';
+          this.classList.add('following');
+        }
+      });
+      
+      // Load more products functionality
+      const loadMoreBtn = document.querySelector('.load-more-btn');
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+          this.textContent = 'Loading...';
+          this.style.opacity = '0.7';
+          
+          setTimeout(() => {
+            this.textContent = 'No more products to load';
+            this.disabled = true;
+            this.style.opacity = '0.5';
+          }, 1500);
+        });
+      }
+      
+      // Contact form submission
+      const contactForm = document.querySelector('.contact-form');
+      contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const name = this.querySelector('#name').value;
+        const email = this.querySelector('#email').value;
+        const subject = this.querySelector('#subject').value;
+        const message = this.querySelector('#message').value;
+        
+        // Validate form
+        if (!name || !email || !subject || !message) {
+          alert('Please fill all fields');
+          return;
+        }
+        
+        // Create success message
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Your message has been sent successfully! We\'ll get back to you soon.';
+        
+        // Add success message to the form
+        this.parentNode.insertBefore(successMessage, this);
+        
+        // Reset form
+        this.reset();
+        
+        // Remove success message after 5 seconds
         setTimeout(() => {
-          this.textContent = 'No more products to load';
-          this.disabled = true;
-          this.style.opacity = '0.5';
-        }, 1500);
+          successMessage.remove();
+        }, 5000);
       });
-    }
-    
-    // Contact form submission
-    const contactForm = document.querySelector('.contact-form');
-    contactForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Get form values
-      const name = this.querySelector('#name').value;
-      const email = this.querySelector('#email').value;
-      const subject = this.querySelector('#subject').value;
-      const message = this.querySelector('#message').value;
-      
-      // Validate form (simple validation)
-      if (!name || !email || !subject || !message) {
-        alert('Please fill all fields');
-        return;
+
+      // Gallery lightbox effect
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      galleryItems.forEach(item => {
+        item.addEventListener('click', function() {
+          // Add lightbox functionality here if needed
+          console.log('Gallery item clicked');
+        });
+      });
+
+      // Animate elements on scroll
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-slide-up');
+          }
+        });
+      }, observerOptions);
+
+      // Observe cards for animation
+      const cards = document.querySelectorAll('.product-card, .course-card, .event-card, .gallery-item');
+      cards.forEach(card => {
+        observer.observe(card);
+      });
+
+      // Mobile menu toggle
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      const navMenu = document.querySelector('nav ul');
+
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function() {
+          navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
+        });
       }
-      
-      // This would typically be an AJAX request to send the message
-      // For now, we'll just show a success message
-      
-      // Create success message
-      const successMessage = document.createElement('div');
-      successMessage.style.backgroundColor = '#dff0d8';
-      successMessage.style.color = '#3c763d';
-      successMessage.style.padding = '15px';
-      successMessage.style.borderRadius = '5px';
-      successMessage.style.marginBottom = '20px';
-      successMessage.style.textAlign = 'center';
-      successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Your message has been sent successfully! We\'ll get back to you soon.';
-      
-      // Add success message to the form
-      this.parentNode.insertBefore(successMessage, this);
-      
-      // Reset form
-      this.reset();
-      
-      // Remove success message after 5 seconds
-      setTimeout(() => {
-        successMessage.remove();
-      }, 5000);
     });
   </script>
 </body>

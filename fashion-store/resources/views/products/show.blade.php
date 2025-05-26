@@ -854,7 +854,7 @@
                             <p style="margin-bottom: 25px;">The item has been added to your shopping cart.</p>
                             <div style="display: flex; gap: 15px; justify-content: center;">
                                 <button id="continueShoppingBtn" class="btn btn-outline" style="min-width: 120px;">Continue Shopping</button>
-                                <a href="{{ route('cart.show') }}" class="btn btn-primary" style="min-width: 120px;">View Cart</a>
+                                <a href="{{ route('cart.index') }}" class="btn btn-primary" style="min-width: 120px;">View Cart</a>
                             </div>
                         </div>
                     </div>

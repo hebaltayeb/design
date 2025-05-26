@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('designer_id');
+            $table->unsignedBigInteger('designer_id')->nullable();
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->string('color')->nullable();
             $table->string('category')->nullable();
             $table->string('image')->nullable();
+
+            $table->enum('approval_status', ['pending', 'approved', 'rejected', 'canceled'])->default('pending');
+
             $table->boolean('is_featured')->default(false);
             $table->integer('favorites_count')->default(0);
             $table->integer('sales_count')->default(0);

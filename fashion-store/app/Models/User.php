@@ -3,14 +3,16 @@
 namespace App\Models;
 
 use App\Models\Cart;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +26,7 @@ class User extends Authenticatable
         'is_designer',
         'profile_picture',
         'bio',
+        'role', // Add this line
     ];
 
     /**
@@ -112,10 +115,10 @@ class User extends Authenticatable
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function eventRSVPs(): HasMany
-    {
-        return $this->hasMany(EventRSVP::class);
-    }
+    // public function eventRSVPs(): HasMany
+    // {
+    //     return $this->hasMany(EventRSVP::class);
+    // }
 
     /**
      * Get the media items (gallery) of this designer.
@@ -152,16 +155,60 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if the user is an admin.
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if the user is a superadmin.
+     *
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin'; // Updated to match migration
+    }
+
+    /**
+     * Check if the user has admin privileges (admin or superadmin).
+     *
+     * @return bool
+     */
+    public function hasAdminAccess(): bool
+    {
+        return in_array($this->role, ['admin', 'super_admin']); // Updated to match migration
+    }
+
+    /**
      * Check if the user is a designer.
      *
      * @return bool
      */
     public function isDesigner(): bool
     {
-        return $this->is_designer;
+        return $this->is_designer || $this->role === 'designer';
     }
     public function cart()
     {
         return $this->hasMany(Cart::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
+
+    // Orders for products designed by this user (through order items)
+    public function designerOrders()
+    {
+        return Order::whereHas('orderItems.product', function ($query) {
+            $query->where('designer_id', $this->id);
+        });
+    }
+
 }

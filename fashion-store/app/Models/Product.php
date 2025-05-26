@@ -8,21 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
-        'designer_id', 
-        'name', 
-        'description', 
-        'price', 
-        'color', 
-        'category_id', 
-        'image', 
+        'designer_id',
+        'name',
+        'description',
+        'price',
+        'color',
+        'category_id',
+        'image',
         'is_featured',
-        'is_customizable', 
-        'favorites_count', 
-        'sales_count', 
-        'seo_title', 
-        'seo_description'
+        'approval_status',
+        'favorites_count',
+        'sales_count',
+        'seo_title',
+        'seo_description',
     ];
 
     public function hasDiscount()
@@ -30,11 +30,11 @@ class Product extends Model
         if (!$this->discount) {
             return false;
         }
-        
+
         $now = now();
         return $now->between($this->discount->start_date, $this->discount->end_date);
     }
-    
+
     /**
      * Get the discounted price of the product.
      * 
@@ -45,14 +45,14 @@ class Product extends Model
         if (!$this->hasDiscount()) {
             return $this->price;
         }
-        
+
         if ($this->discount->is_percentage) {
             return $this->price - ($this->price * $this->discount->discount_value / 100);
         }
-        
+
         return $this->price - $this->discount->discount_value;
     }
-    
+
     public function designer()
     {
         return $this->belongsTo(User::class, 'designer_id');
@@ -67,22 +67,22 @@ class Product extends Model
     {
         return $this->hasOne(Discount::class);
     }
-    
+
     public function ratings()
     {
         return $this->hasMany(Rating::class);
     }
-    
+
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
-    
+
     public function customizationRequests()
     {
         return $this->hasMany(CustomizeRequest::class);
     }
-    
+
     /**
      * Calculate the average rating for this product.
      * 
@@ -93,7 +93,8 @@ class Product extends Model
         if ($this->ratings->count() === 0) {
             return null;
         }
-        
+
         return round($this->ratings->avg('rating'), 1);
     }
 }
+
