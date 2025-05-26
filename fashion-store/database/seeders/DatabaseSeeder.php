@@ -15,6 +15,9 @@ class DatabaseSeeder extends Seeder
     {
         // Call the SuperAdminSeeder
         $this->call(SuperAdminSeeder::class);
+        
+        // Call the DesignerSeeder
+        $this->call(DesignerSeeder::class);
 
         // User::factory(10)->create();
 

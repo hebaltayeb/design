@@ -40,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     // Favorites routes
     Route::middleware(['auth'])->group(function () {
         // Favorites routes
@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
         Route::post('/favorites/remove', [FavoriteController::class, 'remove'])->name('favorites.remove');
         Route::post('/favorites/add-all-to-cart', [FavoriteController::class, 'addAllToCart'])->name('favorites.add-all-to-cart');
-        
+
         // Ratings routes
         Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
     });
@@ -60,24 +60,30 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
     // معالجة الـ checkout
-Route::post('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
     // Ratings routes
     Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
-    
+
     // Designer Profile Interaction Routes (require authentication)
-    Route::post('/designers/{designer}/products/{product}/customize', 
-        [DesignerProfileController::class, 'submitCustomization'])
+    Route::post(
+        '/designers/{designer}/products/{product}/customize',
+        [DesignerProfileController::class, 'submitCustomization']
+    )
         ->name('designers.products.customize');
-    
+
     // Course Enrollment Route
-    Route::post('/designers/{designer}/courses/{course}/enroll', 
-        [DesignerProfileController::class, 'enrollCourse'])
+    Route::post(
+        '/designers/{designer}/courses/{course}/enroll',
+        [DesignerProfileController::class, 'enrollCourse']
+    )
         ->name('designers.courses.enroll');
-    
+
     // Event RSVP Route
-    Route::post('/designers/{designer}/events/{event}/rsvp', 
-        [DesignerProfileController::class, 'rsvpEvent'])
+    Route::post(
+        '/designers/{designer}/events/{event}/rsvp',
+        [DesignerProfileController::class, 'rsvpEvent']
+    )
         ->name('designers.events.rsvp');
 });
 
@@ -87,7 +93,7 @@ Route::get('/courses/{course}', [CourseController::class, 'show'])->name('course
 Route::get('/courses/{course}/enroll', [EnrollmentController::class, 'create'])
     ->name('courses.enrollments.create');
 
-    
+
 
 // حفظ بيانات التسجيل في الدورة
 Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])
@@ -121,7 +127,7 @@ Route::prefix('courses')->name('courses.')->group(function () {
     Route::put('/{id}', [CourseController::class, 'update'])->name('update');
     Route::delete('/{id}', [CourseController::class, 'destroy'])->name('destroy');
     Route::post('/{id}/enroll', [CourseController::class, 'enroll'])->name('enroll');
-    
+
     // مسارات إضافية
     Route::get('/my-courses', [CourseController::class, 'myDesignerCourses'])->name('my-courses');
     Route::get('/designer/{id}', [CourseController::class, 'coursesByDesigner'])->name('by-designer');
@@ -129,13 +135,13 @@ Route::prefix('courses')->name('courses.')->group(function () {
 
 // About and contact pages
 Route::get('/about', [AboutController::class, 'about'])->name('about');
-Route::get('/contact', function() {
+Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
-Route::get('/blog', function() {
+Route::get('/blog', function () {
     return view('blog');
 })->name('blog');
-Route::get('/des', function() {
+Route::get('/des', function () {
     return view('des');
 })->name('des');
 
@@ -143,7 +149,7 @@ Route::get('/des', function() {
 // Add these routes in the admin group
 Route::prefix('admin')->name('admin.')->group(function () {
     // ... existing admin routes ...
-    
+
     // Coupon management routes
     Route::resource('coupons', CouponAdminController::class);
 });
@@ -151,7 +157,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Admin routes
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Product management routes
     Route::get('/products', [ProductsAdminController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductsAdminController::class, 'create'])->name('products.create');
@@ -161,16 +167,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/products/{product}', [ProductsAdminController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductsAdminController::class, 'destroy'])->name('products.destroy');
     Route::patch('/products/{product}/status', [ProductsAdminController::class, 'updateStatus'])->name('products.status');
-    
+
     // User management routes
     Route::resource('users', UserAdminController::class);
-    
+
     // Order management routes
     Route::resource('orders', OrderAdminController::class)->except(['create', 'store']);
-    
+
     // Category management routes
     Route::resource('categories', CategoryAdminController::class);
-    
+
     // Course management routes
     Route::resource('courses', CoursesAdminController::class);
     Route::post('courses/{course}/learning-points', [CoursesAdminController::class, 'updateLearningPoints'])->name('courses.learning-points.update');
@@ -182,7 +188,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 // Include the authentication routes
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // Designer Dashboard Routes
 use App\Http\Controllers\Designer\ProductController as DesignerProductController;
@@ -192,41 +198,50 @@ use App\Http\Controllers\Designer\DesignerSettings as DesignerSettingsController
 // Designer Dashboard Routes
 Route::middleware(['auth'])->prefix('designer')->name('designer.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Designer\DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Product CRUD routes
     Route::resource('products', DesignerProductController::class);
-    
+
     // Course CRUD routes
     Route::resource('courses', DesignerCourseController::class);
-    
+
     // Settings routes
     Route::post('/settings/account', [DesignerSettings::class, 'updateAccount'])->name('settings.account');
     Route::post('/settings/profile', [DesignerSettings::class, 'updateProfile'])->name('settings.profile');
     Route::delete('/settings/account', [DesignerSettings::class, 'deleteAccount'])->name('settings.delete');
+    
+    // Add logout route
+    Route::post('/logout', function() {
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect()->route('landing')->with('success', 'Logged out successfully!');
+    })->name('logout');
 });
 
 // Add these routes to your web.php file
 Route::prefix('designer')->name('designer.')->group(function () {
     Route::get('/orders', [App\Http\Controllers\Designer\OrderController::class, 'index'])
         ->name('orders.index');
-    
+
     Route::get('/orders/{order}', [App\Http\Controllers\Designer\OrderController::class, 'show'])
         ->name('orders.show');
-    
+
     Route::patch('/orders/{order}/status', [App\Http\Controllers\Designer\OrderController::class, 'updateStatus'])
         ->name('orders.update-status');
 });
 
 // Admin Authentication Routes
 Route::prefix('admin')->group(function () {
+
     Route::get('/login', [App\Http\Controllers\Admin\AuthAdmin::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [App\Http\Controllers\Admin\AuthAdmin::class, 'login']);
     Route::post('/logout', [App\Http\Controllers\Admin\AuthAdmin::class, 'logout'])->name('admin.logout');
-    
+
     // Protected admin routes (accessible by both admin and superadmin)
     Route::middleware(['admin.auth'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-        
+        Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
         // Product management routes
         Route::get('/products', [ProductsAdminController::class, 'index'])->name('admin.products.index');
         Route::get('/products/create', [ProductsAdminController::class, 'create'])->name('admin.products.create');
@@ -236,35 +251,37 @@ Route::prefix('admin')->group(function () {
         Route::put('/products/{product}', [ProductsAdminController::class, 'update'])->name('admin.products.update');
         Route::delete('/products/{product}', [ProductsAdminController::class, 'destroy'])->name('admin.products.destroy');
         Route::patch('/products/{product}/status', [ProductsAdminController::class, 'updateStatus'])->name('admin.products.status');
-        
+
         // Order management routes
         Route::resource('orders', OrderAdminController::class, ['as' => 'admin'])->except(['create', 'store']);
-        
+
         // Category management routes
         Route::resource('categories', CategoryAdminController::class, ['as' => 'admin']);
-        
+
         // Course management routes
         Route::resource('courses', CoursesAdminController::class, ['as' => 'admin']);
         Route::post('courses/{course}/learning-points', [CoursesAdminController::class, 'updateLearningPoints'])->name('admin.courses.learning-points.update');
-        
+
         // Coupon management routes
         Route::resource('coupons', CouponAdminController::class, ['as' => 'admin']);
     });
 
     // SuperAdmin only routes
     Route::middleware(['superadmin.auth'])->group(function () {
-        Route::get('/superadmin/dashboard', function () {
-            return view('admin.superadmin.dashboard');
-        })->name('admin.superadmin.dashboard');
-        
+
         // User management routes (superadmin only)
         Route::resource('users', UserAdminController::class, ['as' => 'admin']);
-        
+
         // System settings routes (superadmin only)
         Route::get('/settings', function () {
             return view('admin.settings');
         })->name('admin.settings');
-        
+
         // Advanced system management routes here
     });
 });
+
+// Error pages routes
+Route::get('/403', function () {
+    return view('errors.403');
+})->name('403');
