@@ -1013,7 +1013,13 @@
         
         <div class="cta-buttons">
           @auth
-            <a href="{{ route('dashboard') }}" class="btn btn-outline">{{ __('Dashboard') }}</a>
+            @if(auth()->user()->role === 'designer' || auth()->user()->is_designer)
+              <a href="{{ route('designer.dashboard') }}" class="btn btn-outline">{{ __('Designer Dashboard') }}</a>
+            @elseif(in_array(auth()->user()->role, ['admin', 'super_admin']))
+              <a href="{{ route('admin.dashboard') }}" class="btn btn-outline">{{ __('Admin Dashboard') }}</a>
+            @else
+              <a href="{{ route('dashboard') }}" class="btn btn-outline">{{ __('Dashboard') }}</a>
+            @endif
           @else
             <a href="{{ route('login') }}" class="btn btn-outline">{{ __('Sign In') }}</a>
             <a href="{{ route('register') }}" class="btn btn-primary">{{ __('Create Account') }}</a>

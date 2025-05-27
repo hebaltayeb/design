@@ -422,6 +422,9 @@
         <form method="POST" action="{{ route('login') }}" id="loginForm">
             @csrf
             
+            <!-- Add hidden redirect field -->
+            <input type="hidden" name="redirect" value="{{ request()->get('redirect', '/') }}">
+            
             <!-- Email Address -->
             <div class="form-group">
                 <label for="email">Email Address</label>

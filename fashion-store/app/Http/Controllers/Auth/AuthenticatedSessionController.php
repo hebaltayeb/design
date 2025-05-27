@@ -28,7 +28,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Check user role and redirect accordingly
+        $user = Auth::user();
+        
+        if ($user->role === 'designer' || $user->is_designer) {
+            return redirect()->intended(route('designer.dashboard'));
+        } elseif (in_array($user->role, ['admin', 'super_admin'])) {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        // Default redirect to landing page for regular users
+        return redirect()->intended('/');
     }
 
     /**

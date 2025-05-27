@@ -58,6 +58,14 @@
 </head>
 
 <body class="bg-gray-100">
+    @auth
+        @if(!in_array(auth()->user()->role, ['admin', 'super_admin']))
+            <script>window.location.href = "{{ url('/403') }}";</script>
+        @endif
+    @else
+        <script>window.location.href = "{{ route('login') }}";</script>
+    @endauth
+    
     <div x-data="{ sidebarOpen: window.innerWidth >= 1024 }" class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <div :class="{'translate-x-0 shadow-2xl': sidebarOpen, '-translate-x-full': !sidebarOpen}"
@@ -206,7 +214,7 @@
             </header>
 
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-                <div class="container px-6 py-8 mx-auto">
+                <div class="container mx-auto px-6 py-8">
                     @if(session('success'))
                     <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
                         <div class="flex">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\User; // Add this line
 use Illuminate\Http\Request;
 
 class OrderAdminController extends Controller
@@ -49,7 +50,7 @@ class OrderAdminController extends Controller
     public function edit(Order $order)
     {
         $order->load(['user', 'orderItems.product']);
-        $users = User::all();
+        $users = User::all(); // This line needs the User import
         $statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
         
         return view('admin.orders.edit', compact('order', 'users', 'statuses'));
