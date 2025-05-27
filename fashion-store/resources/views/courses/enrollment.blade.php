@@ -73,6 +73,20 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <div class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl mb-8">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-exclamation-triangle mr-3"></i>
+                    <strong>Please fix the following errors:</strong>
+                </div>
+                <ul class="ml-6 list-disc">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Main Content Grid -->
         <div class="grid lg:grid-cols-3 gap-12">
             
@@ -197,7 +211,7 @@
                             </h3>
 
                             <div class="space-y-4">
-                                <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-fashion-pink hover:bg-fashion-pink/5 transition-all duration-300 payment-option" data-value="credit_card">
+                                <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-fashion-pink hover:bg-fashion-pink/5 transition-all duration-300 payment-option">
                                     <input type="radio" 
                                            name="payment_method" 
                                            value="credit_card" 
@@ -217,7 +231,7 @@
                                     </div>
                                 </label>
 
-                                <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-fashion-pink hover:bg-fashion-pink/5 transition-all duration-300 payment-option" data-value="paypal">
+                                <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-fashion-pink hover:bg-fashion-pink/5 transition-all duration-300 payment-option">
                                     <input type="radio" 
                                            name="payment_method" 
                                            value="paypal" 
@@ -236,7 +250,7 @@
                                     </div>
                                 </label>
 
-                                <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-fashion-pink hover:bg-fashion-pink/5 transition-all duration-300 payment-option" data-value="bank_transfer">
+                                <label class="relative flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-fashion-pink hover:bg-fashion-pink/5 transition-all duration-300 payment-option">
                                     <input type="radio" 
                                            name="payment_method" 
                                            value="bank_transfer" 
@@ -298,7 +312,6 @@
                             
                             <div class="flex justify-between py-2 border-b border-gray-200">
                                 <span class="font-medium text-gray-600">Category</span>
-                                <span class="text-fashion-gray">{{ $course->category->name }}</span>
                             </div>
                             
                             <div class="flex justify-between py-2 border-b border-gray-200">
