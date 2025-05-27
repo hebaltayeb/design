@@ -13,13 +13,6 @@ use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
-    public function __construct()
-    {
-        // تطبيق middleware للتحقق من أن المستخدم مصمم لوظائف الإنشاء والتعديل والحذف
-        $this->middleware('auth')->except(['index', 'show']);
-        $this->middleware('designer')->only(['create', 'store', 'edit', 'update', 'destroy', 'myDesignerCourses']);
-    }
-
     public function index(Request $request)
     {
         $categories = Category::all();
@@ -27,7 +20,7 @@ class CourseController extends Controller
     
         $query = Course::query()->with('designer');
     
-        // البحث عن الدورات
+        // Search courses
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'LIKE', '%' . $request->search . '%')
@@ -35,17 +28,17 @@ class CourseController extends Controller
             });
         }
     
-        // التصفية حسب الفئة
+        // Filter by category
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
         }
     
-        // التصفية حسب المصمم
+        // Filter by designer
         if ($request->has('designer') && $request->designer) {
             $query->where('designer_id', $request->designer);
         }
     
-        // التصفية حسب السعر
+        // Filter by price
         if ($request->has('price')) {
             if ($request->price == 'low') {
                 $query->orderBy('price', 'asc');
@@ -54,19 +47,40 @@ class CourseController extends Controller
             }
         }
     
-        $courses = $query->paginate(6);
+        $courses = $query->paginate(9);
     
         return view('courses.index', compact('courses', 'categories', 'designers'));
     }
 
+    public function show($id)
+    {
+        $course = Course::with(['designer', 'category', 'learningPoints'])->findOrFail($id);
+
+        $relatedCourses = Course::where('category_id', $course->category_id)
+            ->where('id', '!=', $course->id)
+            ->take(3)
+            ->get();
+
+        return view('courses.course-details', compact('course', 'relatedCourses'));
+    }
+
+    // Only authenticated users can create/edit courses
     public function create()
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        
         $categories = Category::all();
         return view('courses.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -101,28 +115,20 @@ class CourseController extends Controller
         }
 
         return redirect()->route('courses.show', $course)
-            ->with('success', 'تم إنشاء الكورس بنجاح!');
-    }
-
-    public function show($id)
-    {
-        $course = Course::with(['designer', 'category', 'learningPoints'])->findOrFail($id);
-
-        $relatedCourses = Course::where('category_id', $course->category_id)
-            ->where('id', '!=', $course->id)
-            ->take(3)
-            ->get();
-
-        return view('courses.course-details', compact('course', 'relatedCourses'));
+            ->with('success', 'Course created successfully!');
     }
 
     public function edit($id)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $course = Course::findOrFail($id);
 
         if (Auth::id() !== $course->designer_id) {
             return redirect()->route('courses.show', $course)
-                ->with('error', 'ليس لديك صلاحية تعديل هذا الكورس.');
+                ->with('error', 'You do not have permission to edit this course.');
         }
 
         $categories = Category::all();
@@ -131,11 +137,15 @@ class CourseController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $course = Course::findOrFail($id);
 
         if (Auth::id() !== $course->designer_id) {
             return redirect()->route('courses.show', $course)
-                ->with('error', 'ليس لديك صلاحية تعديل هذا الكورس.');
+                ->with('error', 'You do not have permission to edit this course.');
         }
 
         $validated = $request->validate([
@@ -176,16 +186,20 @@ class CourseController extends Controller
         }
 
         return redirect()->route('courses.show', $course)
-            ->with('success', 'تم تحديث الكورس بنجاح!');
+            ->with('success', 'Course updated successfully!');
     }
 
     public function destroy($id)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $course = Course::findOrFail($id);
 
         if (Auth::id() !== $course->designer_id) {
             return redirect()->route('courses.show', $course)
-                ->with('error', 'ليس لديك صلاحية حذف هذا الكورس.');
+                ->with('error', 'You do not have permission to delete this course.');
         }
 
         if ($course->image) {
@@ -196,31 +210,10 @@ class CourseController extends Controller
         $course->delete();
 
         return redirect()->route('courses.index')
-            ->with('success', 'تم حذف الكورس بنجاح!');
+            ->with('success', 'Course deleted successfully!');
     }
 
-    public function myDesignerCourses()
-    {
-        $courses = Course::where('designer_id', Auth::id())
-            ->with('category')
-            ->latest()
-            ->paginate(10);
-            
-        return view('courses.designer-courses', compact('courses'));
-    }
-
-    public function coursesByDesigner($designerId)
-    {
-        $designer = User::where('is_designer', true)->findOrFail($designerId);
-        
-        $courses = Course::where('designer_id', $designerId)
-            ->with('category')
-            ->latest()
-            ->paginate(6);
-            
-        return view('courses.designer-courses', compact('courses', 'designer'));
-    }
-
+    // Enrollment method - anyone can enroll (even without account)
     public function enroll(Request $request, $id)
     {
         $request->validate([
@@ -230,6 +223,15 @@ class CourseController extends Controller
         ]);
 
         $course = Course::findOrFail($id);
+        
+        // Check if already enrolled with this email
+        $existingEnrollment = Enrollment::where('course_id', $course->id)
+            ->where('email', $request->email)
+            ->first();
+
+        if ($existingEnrollment) {
+            return redirect()->back()->with('error', 'You are already enrolled in this course!');
+        }
         
         $userId = Auth::check() ? Auth::id() : null;
         
@@ -242,6 +244,6 @@ class CourseController extends Controller
         $enrollment->payment_status = 'pending';
         $enrollment->save();
         
-        return redirect()->back()->with('success', 'تم تسجيلك في الدورة بنجاح!');
+        return redirect()->back()->with('success', 'Successfully enrolled! Please proceed with payment.');
     }
 }

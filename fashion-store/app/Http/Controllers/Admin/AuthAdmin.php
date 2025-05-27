@@ -66,11 +66,9 @@ class AuthAdmin extends Controller
                 true  // httpOnly
             );
 
-            // Redirect based on role
-            $redirectUrl = $user->isSuperAdmin() ? '/admin/superadmin/dashboard' : '/admin/dashboard';
-
+            // Redirect to dashboard
             return redirect()
-                ->intended($redirectUrl)
+                ->intended('/dashboard')
                 ->withCookie($cookie);
         }
 
