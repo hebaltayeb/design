@@ -4,620 +4,249 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fashion Design Courses - Creative Fashion Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'poppins': ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            'fashion-pink': '#ff6b9d',
+            'fashion-dark': '#c44569',
+            'fashion-gray': '#2c3e50',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-poppins bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+  
+  <!-- Header -->
+  <div class="bg-white/80 backdrop-blur-md shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between">
+        <a href="{{ route('landing') }}" 
+           class="flex items-center space-x-2 text-fashion-gray hover:text-fashion-pink transition-colors duration-300">
+          <i class="fas fa-arrow-left text-lg"></i>
+          <span class="font-medium">Back to Home</span>
+        </a>
+        <div class="text-sm text-gray-500">
+          Fashion Design Courses
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Page Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-light text-fashion-gray mb-6 leading-tight">
+        Fashion Design <span class="font-semibold bg-gradient-to-r from-fashion-pink to-fashion-dark bg-clip-text text-transparent">Courses</span>
+      </h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        Learn from world-class fashion designers and take your skills to the next level with our comprehensive online courses.
+      </p>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 mb-8">
+      <form method="GET" action="{{ route('courses.index') }}" class="space-y-4 md:space-y-0 md:flex md:items-center md:space-x-6">
+        
+        <!-- Search Box -->
+        <div class="flex-1">
+          <div class="relative">
+            <input type="text" 
+                   name="search" 
+                   value="{{ request('search') }}"
+                   placeholder="Search courses..." 
+                   class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-fashion-pink focus:border-transparent transition-all duration-300">
+            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="md:w-48">
+          <select name="category" 
+                  class="w-full py-3 px-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-fashion-pink focus:border-transparent transition-all duration-300">
+            <option value="">All Categories</option>
+            @foreach($categories as $category)
+              <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                {{ $category->name }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+
+        <!-- Designer Filter -->
+        <div class="md:w-48">
+          <select name="designer" 
+                  class="w-full py-3 px-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-fashion-pink focus:border-transparent transition-all duration-300">
+            <option value="">All Designers</option>
+            @foreach($designers as $designer)
+              <option value="{{ $designer->id }}" {{ request('designer') == $designer->id ? 'selected' : '' }}>
+                {{ $designer->name }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+
+        <!-- Price Filter -->
+        <div class="md:w-40">
+          <select name="price" 
+                  class="w-full py-3 px-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-fashion-pink focus:border-transparent transition-all duration-300">
+            <option value="">Price</option>
+            <option value="low" {{ request('price') == 'low' ? 'selected' : '' }}>Low to High</option>
+            <option value="high" {{ request('price') == 'high' ? 'selected' : '' }}>High to Low</option>
+          </select>
+        </div>
+
+        <!-- Filter Button -->
+        <button type="submit" 
+                class="w-full md:w-auto bg-gradient-to-r from-fashion-pink to-fashion-dark text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+          <i class="fas fa-filter mr-2"></i>
+          Filter
+        </button>
+      </form>
+    </div>
+
+    <!-- Results Count -->
+    <div class="flex items-center justify-between mb-8">
+      <p class="text-gray-600">
+        Showing {{ $courses->count() }} of {{ $courses->total() }} courses
+      </p>
+      <a href="{{ route('courses.index') }}" 
+         class="text-fashion-pink hover:text-fashion-dark transition-colors duration-300">
+        Clear Filters
+      </a>
+    </div>
+
+    <!-- Courses Grid -->
+    @if($courses->count() > 0)
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      @foreach($courses as $course)
+      <div class="bg-white/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-xl border border-white/20 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group">
+        
+        <!-- Course Image -->
+        <div class="relative overflow-hidden">
+          <img src="{{ $course->image ? asset('storage/' . $course->image) : 'https://via.placeholder.com/400x250' }}" 
+               alt="{{ $course->title }}" 
+               class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-300">
+          
+          <!-- Price Badge -->
+          <div class="absolute top-4 right-4 bg-gradient-to-r from-fashion-pink to-fashion-dark text-white px-4 py-2 rounded-full font-bold">
+            ${{ number_format($course->price, 2) }}
+          </div>
+
+          <!-- Category Badge -->
+          <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-fashion-gray px-3 py-1 rounded-full text-sm font-medium">
+            {{ $course->category->name }}
+          </div>
+        </div>
+
+        <!-- Course Content -->
+        <div class="p-6">
+          
+          <!-- Designer Info -->
+          <div class="flex items-center space-x-3 mb-4">
+            <img src="{{ $course->designer->profile_image ?? 'https://via.placeholder.com/40' }}" 
+                 alt="{{ $course->designer->name }}"
+                 class="w-10 h-10 rounded-full object-cover border-2 border-gray-200">
+            <div>
+              <p class="font-medium text-fashion-gray text-sm">{{ $course->designer->name }}</p>
+              <p class="text-gray-500 text-xs">Fashion Designer</p>
+            </div>
+          </div>
+
+          <!-- Course Title -->
+          <h3 class="text-xl font-semibold text-fashion-gray mb-3 line-clamp-2 group-hover:text-fashion-pink transition-colors duration-300">
+            {{ $course->title }}
+          </h3>
+
+          <!-- Course Description -->
+          <p class="text-gray-600 mb-4 line-clamp-3 text-sm leading-relaxed">
+            {{ Str::limit($course->description, 120) }}
+          </p>
+
+          <!-- Course Meta -->
+          <div class="flex items-center justify-between text-sm text-gray-500 mb-6">
+            <div class="flex items-center space-x-4">
+              @if($course->duration)
+              <span class="flex items-center">
+                <i class="fas fa-clock mr-1"></i>
+                {{ $course->duration }}h
+              </span>
+              @endif
+              
+              @if($course->level)
+              <span class="flex items-center">
+                <i class="fas fa-signal mr-1"></i>
+                {{ ucfirst($course->level) }}
+              </span>
+              @endif
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <a href="{{ route('courses.show', $course) }}" 
+             class="w-full bg-gradient-to-r from-fashion-pink to-fashion-dark text-white font-semibold py-3 px-6 rounded-xl text-center block hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+            <i class="fas fa-eye mr-2"></i>
+            View Course
+          </a>
+        </div>
+      </div>
+      @endforeach
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center">
+      {{ $courses->links() }}
+    </div>
+
+    @else
+    <!-- No Courses Found -->
+    <div class="text-center py-16">
+      <div class="w-32 h-32 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+        <i class="fas fa-search text-4xl text-gray-400"></i>
+      </div>
+      <h3 class="text-2xl font-semibold text-gray-600 mb-4">No courses found</h3>
+      <p class="text-gray-500 mb-6">Try adjusting your filters or search terms.</p>
+      <a href="{{ route('courses.index') }}" 
+         class="bg-gradient-to-r from-fashion-pink to-fashion-dark text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+        View All Courses
+      </a>
+    </div>
+    @endif
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gradient-to-r from-fashion-gray to-slate-800 text-white mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="text-center">
+        <p class="text-lg">&copy; {{ date('Y') }} Fashion Design Platform. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
   <style>
-    body {
-      font-family: 'Poppins', 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0;
-      color: #333;
-      line-height: 1.6;
-      direction: ltr;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    header {
-      text-align: center;
-      padding: 30px 0;
-    }
-    
-    h1 {
-      color: #000;
-      font-size: 36px;
-      font-weight: 300;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-bottom: 15px;
-      position: relative;
-      display: inline-block;
-    }
-    
-    h1:after {
-      content: '';
-      position: absolute;
-      width: 80px;
-      height: 2px;
-      background-color: #ffd1dc;
-      bottom: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    
-    .subtitle {
-      font-size: 18px;
-      color: #666;
-      max-width: 700px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    
-    .courses-filters {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 30px 0;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    
-    .search-box {
-      flex: 1;
-      min-width: 250px;
-      position: relative;
-    }
-    
-    .search-box input {
-      width: 100%;
-      padding: 12px 45px 12px 20px;
-      border: 1px solid #e0e0e0;
-      border-radius: 5px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 15px;
-    }
-    
-    .search-box i {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #999;
-    }
-    
-    .filter-controls {
-      display: flex;
-      gap: 15px;
-    }
-    
-    select {
-      padding: 12px 40px 12px 25px;
-      border: 1px solid #e0e0e0;
-      border-radius: 5px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 15px;
-      color: #333;
-      cursor: pointer;
-      appearance: none;
-      background: #fff url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat;
-      background-position: calc(100% - 10px) center;
-      padding-right: 40px;
-    }
-    
-    .courses-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 30px;
-      margin: 50px 0;
-    }
-    
-    .course-card {
-      background: white;
-      border-radius: 8px;
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    
-    .course-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
-    }
-    
-    .course-img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-    
-    .course-content {
-      padding: 25px;
-    }
-    
-    .designer-info {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    
-    .designer-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 15px;
-      border: 2px solid #f0f0f0;
-    }
-    
-    .designer-name {
-      font-size: 16px;
-      font-weight: 500;
-      color: #333;
-      margin: 0;
-    }
-    
-    .designer-title {
-      font-size: 14px;
-      color: #666;
-      margin: 5px 0 0;
-    }
-    
-    .course-title {
-      font-size: 22px;
-      font-weight: 500;
-      margin: 0 0 10px 0;
-      line-height: 1.3;
-    }
-    
-    .course-desc {
-      font-size: 15px;
-      color: #666;
-      margin-bottom: 20px;
+    .line-clamp-3 {
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    
-    .course-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .course-price {
-      font-size: 22px;
-      font-weight: 500;
-    }
-    
-    .btn {
-      display: inline-block;
-      background-color: #000;
-      color: white;
-      padding: 12px 25px;
-      text-decoration: none;
-      font-size: 15px;
-      letter-spacing: 1px;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      border: none;
-      cursor: pointer;
-      border-radius: 3px;
-    }
-    
-    .btn:hover {
-      background-color: #333;
-      transform: translateY(-3px);
-    }
-    
-    .btn-outline {
-      background-color: transparent;
-      color: #000;
-      border: 1px solid #000;
-    }
-    
-    .btn-outline:hover {
-      background-color: #000;
-      color: white;
-    }
-    
-    .featured-section {
-      background-color: #f2f2f2;
-      padding: 50px 0;
-      margin: 60px 0;
-      border-radius: 8px;
-    }
-    
-    .featured-section h2 {
-      text-align: center;
-      color: #000;
-      font-size: 28px;
-      font-weight: 400;
-      margin-bottom: 40px;
-      position: relative;
-      padding-bottom: 15px;
-    }
-    
-    .featured-section h2:after {
-      content: '';
-      position: absolute;
-      width: 60px;
-      height: 2px;
-      background-color: #ffd1dc;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    
-    .featured-designer {
-      display: flex;
-      align-items: center;
-      max-width: 900px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
-    
-    .featured-designer-img {
-      width: 40%;
-      height: 400px;
-      object-fit: cover;
-    }
-    
-    .featured-designer-content {
-      width: 60%;
-      padding: 40px;
-    }
-    
-    .featured-designer-name {
-      font-size: 28px;
-      font-weight: 500;
-      margin: 0 0 10px;
-    }
-    
-    .featured-designer-title {
-      font-size: 18px;
-      color: #666;
-      margin: 0 0 20px;
-    }
-    
-    .featured-designer-desc {
-      font-size: 16px;
-      line-height: 1.8;
-      margin-bottom: 30px;
-    }
-    
-    .btn-group {
-      display: flex;
-      gap: 15px;
-    }
-    
-    footer {
-      background-color: #000;
-      color: white;
-      padding: 40px 0;
-      text-align: center;
-      font-size: 15px;
-      font-weight: 300;
-    }
-    
-    .pagination-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 50px;
-    }
-    
-    .pagination {
-      display: flex;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    
-    .pagination li {
-      margin: 0 5px;
-    }
-    
-    .pagination a {
-      display: flex;
-      width: 40px;
-      height: 40px;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid #e0e0e0;
-      color: #333;
-      text-decoration: none;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      border-radius: 5px;
-    }
-    
-    .pagination a:hover, .pagination .active a {
-      background-color: #000;
-      color: white;
-      border-color: #000;
-    }
-    
-    .pagination .prev a, .pagination .next a {
-      width: auto;
-      padding: 0 15px;
-    }
-    
-    @media (max-width: 992px) {
-      .featured-designer {
-        flex-direction: column;
-      }
-      
-      .featured-designer-img {
-        width: 100%;
-        height: 300px;
-      }
-      
-      .featured-designer-content {
-        width: 100%;
-        padding: 30px;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 28px;
-      }
-      
-      .courses-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      }
-      
-      .courses-filters {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      
-      .filter-controls {
-        width: 100%;
-      }
-      
-      select {
-        flex: 1;
-      }
-      
-      .btn-group {
-        flex-direction: column;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 24px;
-      }
-      
-      .courses-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .course-title {
-        font-size: 20px;
-      }
-      
-      .course-price {
-        font-size: 20px;
-      }
-      
-      .featured-designer-name {
-        font-size: 24px;
-      }
-      
-      .featured-designer-title {
-        font-size: 16px;
-      }
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .modal-content {
-      background-color: white;
-      border-radius: 8px;
-      max-width: 500px;
-      width: 100%;
-      padding: 30px;
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    
-    .close-modal {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 24px;
-      cursor: pointer;
-      color: #666;
-    }
-    
-    .modal-title {
-      font-size: 24px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-    
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e0e0e0;
-      border-radius: 5px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 15px;
-    }
-    
-    .form-group textarea {
-      height: 100px;
-      resize: vertical;
-    }
-    
-    .modal-footer {
-      text-align: center;
-      margin-top: 30px;
-    }
-    
-    .modal-active {
-      display: flex;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* Success Message */
-    .success-message {
-      display: none;
-      background-color: #4CAF50;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
   </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Fashion Design Courses</h1>
-      <p class="subtitle">Explore creative courses by top designers</p>
-    </header>
-    <div class="courses-filters">
-      <div class="search-box">
-        <form action="{{ route('courses.index') }}" method="GET">
-          <input type="text" name="search" value="{{ request()->input('search') }}" placeholder="Search for a course..." />
-          <i class="fa fa-search"></i>
-        </form>
-      </div>
-
-      <div class="filter-controls">
-        <form action="{{ route('courses.index') }}" method="GET">
-          <select name="category">
-            <option value="">All Categories</option>
-            @foreach ($categories as $category)
-              <option value="{{ $category->id }}" {{ request()->input('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-            @endforeach
-          </select>
-
-          <button type="submit" class="btn">Apply Filter</button>
-        </form>
-      </div>
-    </div>
-    <div class="courses-grid">
-      @foreach ($courses as $course)
-        <div class="course-card">
-          <img src="https://via.placeholder.com/400x200" alt="Course Image" class="course-img">
-          <div class="course-content">
-            <div class="designer-info">
-              <img src="{{ $course->designer->profile_image ?? 'https://via.placeholder.com/50' }}" class="designer-avatar" alt="Designer">
-              <div>
-                <p class="designer-name">{{ $course->designer->name }}</p>
-                <p class="designer-title">Fashion Designer</p>
-              </div>
-            </div>
-            <h3 class="course-title">{{ $course->title }}</h3>
-            <p class="course-desc">{{ $course->description }}</p>
-            <div class="course-meta">
-              <span class="course-price">${{ number_format($course->price, 2) }}</span>
-              <a href="{{ route('courses.show', $course->id) }}" class="btn btn-outline">Watch</a>
-
-            </div>
-          </div>
-        </div>
-      @endforeach
-    </div>
-  </div>
-  <script>
-    const openModalBtn = document.getElementById('openModalBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const modal = document.getElementById('courseModal');
-
-    openModalBtn.addEventListener('click', () => {
-        modal.style.display = 'block';
-    });
-
-    closeModalBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target == modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    // نموذج الإرسال (نموذجي)
-    document.getElementById('courseForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('تم إرسال الطلب بنجاح! سيتم التواصل معك قريباً.');
-        modal.style.display = 'none';
-    });
-
-
-    const searchInput = document.getElementById('search');
-const filterSelect = document.getElementById('filter');
-const courseCards = document.querySelectorAll('.course-card');
-
-function filterCourses() {
-    const keyword = searchInput.value.toLowerCase();
-    const selectedFilter = filterSelect.value;
-
-    courseCards.forEach(card => {
-        const title = card.querySelector('h3').textContent.toLowerCase();
-        const category = card.getAttribute('data-category');
-
-        const matchText = title.includes(keyword);
-        const matchCategory = selectedFilter === "" || category === selectedFilter;
-
-        if (matchText && matchCategory) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-}
-
-searchInput.addEventListener('input', filterCourses);
-filterSelect.addEventListener('change', filterCourses);
-
-</script>
-
 </body>
 </html>
