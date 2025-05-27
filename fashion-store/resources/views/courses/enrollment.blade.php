@@ -375,7 +375,7 @@
           
           <div class="meta-item">
             <div class="meta-label">Category</div>
-            <div class="meta-value">{{ $course->category->name }}</div>
+        
           </div>
           
           <div class="meta-item">

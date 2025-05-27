@@ -145,7 +145,7 @@
 
           <!-- Category Badge -->
           <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-fashion-gray px-3 py-1 rounded-full text-sm font-medium">
-            {{ $course->category->name }}
+          
           </div>
         </div>
 
