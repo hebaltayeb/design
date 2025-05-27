@@ -1,546 +1,208 @@
 <x-guest-layout>
-    <!-- Add all the CSS from the login example -->
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap');
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            font-family: 'Montserrat', 'Segoe UI', sans-serif;
-            background-color: #f9f9f9;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .register-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 5px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s ease;
-        }
-
-        .register-container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .register-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background-color: #ffd1dc;
-        }
-
-        .register-header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .register-header h1 {
-            color: #000;
-            font-size: 28px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            position: relative;
-            display: inline-block;
-            opacity: 0;
-            transform: translateY(-20px);
-            animation: fadeInDown 0.8s forwards 0.2s;
-        }
-
-        .register-header h1:after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 2px;
-            background-color: #ffd1dc;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .register-header p {
-            color: #666;
-            font-size: 14px;
-            font-weight: 300;
-            opacity: 0;
-            transform: translateY(-15px);
-            animation: fadeInDown 0.8s forwards 0.4s;
-        }
-
-        @keyframes fadeInDown {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-            opacity: 0;
-            transform: translateX(-20px);
-            animation: slideIn 0.5s forwards;
-        }
-
-        .form-group:nth-child(1) {
-            animation-delay: 0.6s;
-        }
-
-        .form-group:nth-child(2) {
-            animation-delay: 0.7s;
-        }
-
-        .form-group:nth-child(3) {
-            animation-delay: 0.8s;
-        }
-
-        .form-group:nth-child(4) {
-            animation-delay: 0.9s;
-        }
-
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 400;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 3px;
-            font-size: 14px;
-            transition: all 0.3s;
-            background-color: #f9f9f9;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .form-control:focus {
-            border-color: #ffd1dc;
-            box-shadow: 0 0 0 3px rgba(255, 209, 220, 0.2);
-            background-color: #fff;
-            outline: none;
-        }
-
-        .input-icon {
-            position: relative;
-        }
-
-        .input-icon i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            transition: color 0.3s;
-        }
-
-        .input-icon input {
-            padding-right: 40px;
-        }
-
-        .input-icon input:focus + i {
-            color: #ffd1dc;
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        .input-error {
-            color: #e74c3c;
-            font-size: 13px;
-            margin-top: 5px;
-            font-weight: 300;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 14px;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards 1.6s;
-            font-weight: 300;
-            color: #666;
-        }
-
-        .login-link a {
-            color: #000;
-            text-decoration: none;
-            font-weight: 400;
-            transition: all 0.3s;
-        }
-
-        .login-link a:hover {
-            color: #ffd1dc;
-        }
-
-        /* Form validation styling */
-        .form-control.valid {
-            border-color: #2ecc71;
-        }
-
-        .form-control.invalid {
-            border-color: #e74c3c;
-        }
-
-        /* Focus effect */
-        .cursor-focus {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: #ffd1dc;
-            transition: width 0.3s;
-        }
-
-        .form-control:focus ~ .cursor-focus {
-            width: 100%;
-        }
-        
-        .actions-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards 1.2s;
-        }
-        
-        .login-link-inline {
-            color: #000;
-            text-decoration: none;
-            font-weight: 400;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .login-link-inline:hover {
-            color: #ffd1dc;
-        }
-        
-        .btn-register {
-            padding: 12px 24px;
-            background-color: #000;
-            border: none;
-            border-radius: 3px;
-            color: white;
-            font-weight: 500;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            font-family: 'Montserrat', sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-register:hover {
-            background-color: #333;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-register:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .btn-register:hover:before {
-            left: 100%;
-        }
-        
-        .social-register {
-            margin-top: 40px;
-            text-align: center;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards 1.4s;
-        }
-
-        .social-register p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-            position: relative;
-            font-weight: 300;
-        }
-
-        .social-register p::before,
-        .social-register p::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            width: 30%;
-            height: 1px;
-            background-color: #e0e0e0;
-        }
-
-        .social-register p::before {
-            left: 0;
-        }
-
-        .social-register p::after {
-            right: 0;
-        }
-
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-
-        .social-icon:hover {
-            transform: translateY(-3px) scale(1.1);
-        }
-
-        .google {
-            background-color: #db4437;
-        }
-
-        .facebook {
-            background-color: #4267B2;
-        }
-
-        .twitter {
-            background-color: #1DA1F2;
-        }
-        
-        @media (max-width: 480px) {
-            .register-container {
-                padding: 30px 20px;
-            }
-            
-            .register-header h1 {
-                font-size: 24px;
-            }
-            
-            .form-group label {
-                font-size: 13px;
-            }
-            
-            .actions-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .login-link-inline {
-                margin-bottom: 15px;
-            }
-            
-            .btn-register {
-                width: 100%;
-            }
-            
-            .social-icon {
-                width: 35px;
-                height: 35px;
-                font-size: 16px;
-            }
-        }
-    </style>
-
-    <!-- Add Font Awesome from CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <div class="register-container">
-        <div class="register-header">
-            <h1>Create Account</h1>
-            <p>Please fill in the form to register</p>
-        </div>
-
-        <form method="POST" action="{{ route('register') }}" id="registerForm">
-            @csrf
-            
-            <!-- Name -->
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <div class="input-icon">
-                    <input id="name" class="form-control @error('name') invalid @enderror" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name">
-                    <i class="fas fa-user"></i>
-                    <div class="cursor-focus"></div>
+    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <!-- Register Card -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white mb-2">Create Account</h1>
+                    <p class="text-gray-300">Join us and start your journey</p>
                 </div>
-                @error('name')
-                    <div class="input-error">{{ $message }}</div>
-                @enderror
-            </div>
 
-            <!-- Email Address -->
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <div class="input-icon">
-                    <input id="email" class="form-control @error('email') invalid @enderror" type="email" name="email" value="{{ old('email') }}" required autocomplete="username">
-                    <i class="fas fa-envelope"></i>
-                    <div class="cursor-focus"></div>
+                <!-- Session Status -->
+                @if (session('status'))
+                    <div class="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300 text-sm text-center">
+                        {{ session('status') }}
+                    </div>
+                @endif
+
+                <!-- Registration Form -->
+                <form method="POST" action="{{ route('register') }}" class="space-y-6">
+                    @csrf
+                    
+                    <!-- Name -->
+                    <div class="space-y-2">
+                        <label for="name" class="block text-sm font-medium text-gray-200">
+                            Full Name
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <input 
+                                id="name" 
+                                type="text" 
+                                name="name" 
+                                value="{{ old('name') }}" 
+                                required 
+                                autofocus 
+                                autocomplete="name"
+                                class="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 @error('name') border-red-400 @enderror"
+                                placeholder="Enter your full name"
+                            >
+                        </div>
+                        @error('name')
+                            <p class="text-red-400 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="space-y-2">
+                        <label for="email" class="block text-sm font-medium text-gray-200">
+                            Email Address
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                </svg>
+                            </div>
+                            <input 
+                                id="email" 
+                                type="email" 
+                                name="email" 
+                                value="{{ old('email') }}" 
+                                required 
+                                autocomplete="username"
+                                class="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 @error('email') border-red-400 @enderror"
+                                placeholder="Enter your email"
+                            >
+                        </div>
+                        @error('email')
+                            <p class="text-red-400 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Password -->
+                    <div class="space-y-2">
+                        <label for="password" class="block text-sm font-medium text-gray-200">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <input 
+                                id="password" 
+                                type="password" 
+                                name="password" 
+                                required 
+                                autocomplete="new-password"
+                                class="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 @error('password') border-red-400 @enderror"
+                                placeholder="Create a password"
+                            >
+                        </div>
+                        @error('password')
+                            <p class="text-red-400 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="space-y-2">
+                        <label for="password_confirmation" class="block text-sm font-medium text-gray-200">
+                            Confirm Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <input 
+                                id="password_confirmation" 
+                                type="password" 
+                                name="password_confirmation" 
+                                required 
+                                autocomplete="new-password"
+                                class="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
+                                placeholder="Confirm your password"
+                            >
+                        </div>
+                        @error('password_confirmation')
+                            <p class="text-red-400 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform hover:scale-[1.02] transition duration-200 shadow-lg"
+                    >
+                        {{ __('Create Account') }}
+                    </button>
+                </form>
+
+                <!-- Login Link -->
+                <div class="mt-8 text-center">
+                    <p class="text-gray-300">
+                        Already have an account? 
+                        <a href="{{ route('login') }}" class="text-purple-400 hover:text-purple-300 font-medium transition duration-200">
+                            Sign in here
+                        </a>
+                    </p>
                 </div>
-                @error('email')
-                    <div class="input-error">{{ $message }}</div>
-                @enderror
             </div>
 
-            <!-- Password -->
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="input-icon">
-                    <input id="password" class="form-control @error('password') invalid @enderror" type="password" name="password" required autocomplete="new-password">
-                    <i class="fas fa-lock"></i>
-                    <div class="cursor-focus"></div>
-                </div>
-                @error('password')
-                    <div class="input-error">{{ $message }}</div>
-                @enderror
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div class="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-500/20 rounded-full blur-xl"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-24 h-24 bg-pink-500/20 rounded-full blur-xl"></div>
+                <div class="absolute top-1/2 right-1/3 w-16 h-16 bg-blue-500/20 rounded-full blur-xl"></div>
+                <div class="absolute top-3/4 left-1/3 w-20 h-20 bg-indigo-500/20 rounded-full blur-xl"></div>
             </div>
-
-            <!-- Confirm Password -->
-            <div class="form-group">
-                <label for="password_confirmation">Confirm Password</label>
-                <div class="input-icon">
-                    <input id="password_confirmation" class="form-control" type="password" name="password_confirmation" required autocomplete="new-password">
-                    <i class="fas fa-check-circle"></i>
-                    <div class="cursor-focus"></div>
-                </div>
-                @error('password_confirmation')
-                    <div class="input-error">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="actions-container">
-                <a class="login-link-inline" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <button type="submit" class="btn-register">
-                    {{ __('Register') }}
-                </button>
-            </div>
-        </form>
-
-        <!-- Social Register Section -->
-        <div class="social-register">
-            <p>Or register with</p>
-            <div class="social-icons">
-                <a href="#" class="social-icon google"><i class="fab fa-google"></i></a>
-                <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a>
-            </div>
-        </div>
-
-        <!-- Login Link -->
-        <div class="login-link">
-            Already have an account? <a href="{{ route('login') }}">Sign in</a>
         </div>
     </div>
 
     <script>
-        // Simple form validation
+        // Enhanced form validation with Tailwind classes
         const nameInput = document.getElementById('name');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('password_confirmation');
-        const registerForm = document.getElementById('registerForm');
+
+        function addValidationClasses(element, isValid) {
+            if (isValid) {
+                element.classList.remove('border-red-400');
+                element.classList.add('border-green-400');
+            } else {
+                element.classList.remove('border-green-400');
+                element.classList.add('border-red-400');
+            }
+        }
 
         nameInput.addEventListener('blur', function() {
-            if (this.value.trim() === '') {
-                this.classList.add('invalid');
-                this.classList.remove('valid');
-            } else {
-                this.classList.remove('invalid');
-                this.classList.add('valid');
-            }
+            const isValid = this.value.trim() !== '' && this.value.length >= 2;
+            addValidationClasses(this, isValid);
         });
 
         emailInput.addEventListener('blur', function() {
-            if (this.value.trim() === '') {
-                this.classList.add('invalid');
-                this.classList.remove('valid');
-            } else if (!validateEmail(this.value)) {
-                this.classList.add('invalid');
-                this.classList.remove('valid');
-            } else {
-                this.classList.remove('invalid');
-                this.classList.add('valid');
-            }
+            const isValid = this.value.trim() !== '' && validateEmail(this.value);
+            addValidationClasses(this, isValid);
         });
 
         passwordInput.addEventListener('blur', function() {
-            if (this.value.trim() === '') {
-                this.classList.add('invalid');
-                this.classList.remove('valid');
-            } else if (this.value.length < 8) {
-                this.classList.add('invalid');
-                this.classList.remove('valid');
-            } else {
-                this.classList.remove('invalid');
-                this.classList.add('valid');
+            const isValid = this.value.trim() !== '' && this.value.length >= 8;
+            addValidationClasses(this, isValid);
+            
+            // Also validate confirm password if it has a value
+            if (confirmPasswordInput.value.trim() !== '') {
+                const confirmIsValid = confirmPasswordInput.value === this.value;
+                addValidationClasses(confirmPasswordInput, confirmIsValid);
             }
         });
 
         confirmPasswordInput.addEventListener('blur', function() {
-            if (this.value.trim() === '') {
-                this.classList.add('invalid');
-                this.classList.remove('valid');
-            } else if (this.value !== passwordInput.value) {
-                this.classList.add('invalid');
-                this.classList.remove('valid');
-            } else {
-                this.classList.remove('invalid');
-                this.classList.add('valid');
-            }
+            const isValid = this.value.trim() !== '' && this.value === passwordInput.value;
+            addValidationClasses(this, isValid);
         });
 
         // Email validation function
@@ -549,16 +211,36 @@
             return re.test(String(email).toLowerCase());
         }
 
-        // Add hover effects for social icons
-        const socialIcons = document.querySelectorAll('.social-icon');
-        socialIcons.forEach(icon => {
-            icon.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px) scale(1.1)';
+        // Add smooth focus transitions
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('transform', 'scale-[1.02]');
             });
             
-            icon.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('transform', 'scale-[1.02]');
             });
+        });
+
+        // Password strength indicator (optional enhancement)
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const hasLower = /[a-z]/.test(password);
+            const hasUpper = /[A-Z]/.test(password);
+            const hasNumber = /\d/.test(password);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            const isLongEnough = password.length >= 8;
+            
+            if (hasLower && hasUpper && hasNumber && hasSpecial && isLongEnough) {
+                this.classList.add('border-green-400');
+                this.classList.remove('border-yellow-400', 'border-red-400');
+            } else if (isLongEnough && (hasLower || hasUpper) && hasNumber) {
+                this.classList.add('border-yellow-400');
+                this.classList.remove('border-green-400', 'border-red-400');
+            } else {
+                this.classList.add('border-red-400');
+                this.classList.remove('border-green-400', 'border-yellow-400');
+            }
         });
     </script>
 </x-guest-layout>

@@ -876,6 +876,104 @@
       color: #95a5a6;
     }
     
+    /* User Menu Styles */
+    .user-menu {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .user-menu-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      min-width: 160px;
+      justify-content: space-between;
+    }
+    
+    .user-menu-toggle i.fa-chevron-down {
+      font-size: 12px;
+      transition: transform 0.3s ease;
+    }
+    
+    .user-menu.active .user-menu-toggle i.fa-chevron-down {
+      transform: rotate(180deg);
+    }
+    
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(196, 69, 105, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      min-width: 200px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      margin-top: 8px;
+    }
+    
+    .user-dropdown.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: #2c3e50;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+    
+    .dropdown-item:hover {
+      background: rgba(196, 69, 105, 0.1);
+      color: #c44569;
+    }
+    
+    .dropdown-item:first-child {
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .dropdown-item:last-child {
+      border-radius: 0 0 12px 12px;
+    }
+    
+    .dropdown-divider {
+      height: 1px;
+      background: rgba(196, 69, 105, 0.1);
+      margin: 8px 0;
+    }
+    
+    .dropdown-form {
+      margin: 0;
+    }
+    
+    .logout-btn {
+      color: #e74c3c;
+      font-family: inherit;
+    }
+    
+    .logout-btn:hover {
+      background: rgba(231, 76, 60, 0.1);
+      color: #c0392b;
+    }
+    
     /* Responsive Styles */
     @media (max-width: 992px) {
       .features-grid {
@@ -1018,7 +1116,33 @@
             @elseif(in_array(auth()->user()->role, ['admin', 'super_admin']))
               <a href="{{ route('admin.dashboard') }}" class="btn btn-outline">{{ __('Admin Dashboard') }}</a>
             @else
-              <a href="{{ route('dashboard') }}" class="btn btn-outline">{{ __('Dashboard') }}</a>
+              <!-- User Menu -->
+              <div class="user-menu">
+                <button class="btn btn-outline user-menu-toggle" onclick="toggleUserMenu()">
+                  <i class="fas fa-user"></i>
+                  {{ auth()->user()->name }}
+                  <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                  <a href="{{ route('profile.edit') }}" class="dropdown-item">
+                    <i class="fas fa-user-edit"></i>
+                    {{ __('Profile') }}
+                  </a>
+                  
+                  <a href="{{ route('favorites.index') }}" class="dropdown-item">
+                    <i class="fas fa-heart"></i>
+                    {{ __('Favorites') }}
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <form method="POST" action="{{ route('logout') }}" class="dropdown-form">
+                    @csrf
+                    <button type="submit" class="dropdown-item logout-btn">
+                      <i class="fas fa-sign-out-alt"></i>
+                      {{ __('Logout') }}
+                    </button>
+                  </form>
+                </div>
+              </div>
             @endif
           @else
             <a href="{{ route('login') }}" class="btn btn-outline">{{ __('Sign In') }}</a>
@@ -1391,6 +1515,37 @@
           });
         });
       });
+    });
+    
+    // User menu toggle functionality
+    function toggleUserMenu() {
+      const dropdown = document.getElementById('userDropdown');
+      const userMenu = document.querySelector('.user-menu');
+      
+      dropdown.classList.toggle('show');
+      userMenu.classList.toggle('active');
+    }
+    
+    // Close user menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const userMenu = document.querySelector('.user-menu');
+      const dropdown = document.getElementById('userDropdown');
+      
+      if (userMenu && !userMenu.contains(event.target)) {
+        dropdown.classList.remove('show');
+        userMenu.classList.remove('active');
+      }
+    });
+    
+    // Close user menu on scroll
+    window.addEventListener('scroll', function() {
+      const dropdown = document.getElementById('userDropdown');
+      const userMenu = document.querySelector('.user-menu');
+      
+      if (dropdown && dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+        userMenu.classList.remove('active');
+      }
     });
   </script>
 </body>
