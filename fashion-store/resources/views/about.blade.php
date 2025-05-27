@@ -1,9 +1,4 @@
-@section('content')
-    <div class="container">
-        <header>
-            <h1>About Us</h1>
-        </header>
-        
+
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">

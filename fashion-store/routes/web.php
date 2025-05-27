@@ -154,6 +154,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('coupons', CouponAdminController::class);
 });
 
+
 // Admin routes
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -180,6 +181,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Course management routes
     Route::resource('courses', CoursesAdminController::class);
     Route::post('courses/{course}/learning-points', [CoursesAdminController::class, 'updateLearningPoints'])->name('courses.learning-points.update');
+
+    // Coupon management routes
+    Route::resource('coupons', CouponAdminController::class);
 });
 
 // Dashboard route provided by Laravel Breeze

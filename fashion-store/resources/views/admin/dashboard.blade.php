@@ -6,8 +6,8 @@
     <div class="min-h-screen">
         <!-- Welcome Section -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Welcome back, Anas</h1>
-            <p class="text-gray-600">Here's what's happening with your fashion business today.</p>
+            <h1 class="text-3xl font-bold text-gray-800"></h1>
+            <p class="text-gray-600"></p>
         </div>
         
         <!-- Stats Cards -->

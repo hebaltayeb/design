@@ -96,5 +96,12 @@ class Product extends Model
 
         return round($this->ratings->avg('rating'), 1);
     }
+    public function getImageUrlAttribute()
+{
+    if ($this->image) {
+        return asset('storage/products/' . $this->image);
+    }
+    return asset('images/placeholder.jpg'); // صورة افتراضية محلية
+}
 }
 
