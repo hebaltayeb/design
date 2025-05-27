@@ -90,14 +90,11 @@ Route::middleware(['auth'])->group(function () {
 // Course routes with model binding
 Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
 Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
-Route::get('/courses/{course}/enroll', [EnrollmentController::class, 'create'])
-    ->name('courses.enrollments.create');
 
+// Enrollment routes
+Route::get('/courses/{course}/enroll', [EnrollmentController::class, 'create'])->name('courses.enrollments.create');
+Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enrollments.store');
 
-
-// حفظ بيانات التسجيل في الدورة
-Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])
-    ->name('courses.enrollments.store');
 
 // صفحة تأكيد أو عرض حالة التسجيل إن أردت (اختياري)
 Route::get('/courses/{course}/enrolled', [EnrollmentController::class, 'enrolled'])
