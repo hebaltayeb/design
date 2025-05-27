@@ -1320,7 +1320,7 @@
     <!-- Designer Profile -->
     <div class="designer-profile">
       <div class="profile-banner">
-        <img src="/api/placeholder/1200/350" alt="Designer Banner">
+        <img src="/api/placeholder/1200/350" alt="">
         @if($designer->is_featured)
         <div class="featured-badge">Featured Designer</div>
         @endif

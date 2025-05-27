@@ -73,7 +73,7 @@
                                                 <th>Designer</th>
                                                 <td>
                                                     @if($product->designer)
-                                                        <a href="{{ route('admin.designers.show', $product->designer_id) }}">
+                                                        <a href="{{ route('products.show', $product->designer_id) }}">
                                                             {{ $product->designer->name }}
                                                         </a>
                                                     @else

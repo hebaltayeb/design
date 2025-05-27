@@ -141,12 +141,12 @@ Route::get('/des', function() {
 
 
 // Add these routes in the admin group
-Route::prefix('admin')->name('admin.')->group(function () {
-    // ... existing admin routes ...
+// Route::prefix('admin')->name('admin.')->group(function () {
+//     // ... existing admin routes ...
     
-    // Coupon management routes
-    Route::resource('coupons', CouponAdminController::class);
-});
+//     // Coupon management routes
+//     Route::resource('coupons', CouponAdminController::class);
+// });
 
 // Admin routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -174,6 +174,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Course management routes
     Route::resource('courses', CoursesAdminController::class);
     Route::post('courses/{course}/learning-points', [CoursesAdminController::class, 'updateLearningPoints'])->name('courses.learning-points.update');
+
+    // Coupon management routes
+    Route::resource('coupons', CouponAdminController::class);
 });
 
 // Dashboard route provided by Laravel Breeze

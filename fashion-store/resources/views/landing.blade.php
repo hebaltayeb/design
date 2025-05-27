@@ -1121,68 +1121,72 @@
 
   <!-- Products Section -->
   <section class="products" id="products">
-    <div class="container">
-      <div class="section-header">
-        <h2>{{ __('Top Products') }}</h2>
-        <p>{{ __('Explore our best-selling exclusive designs') }}</p>
-      </div>
-      <div class="products-grid">
-        @foreach($topProducts as $product)
-        <div class="product-card">
-          <div class="product-image">
-            <img src="{{ $product->image ? asset('storage/'.$product->image) : '/api/placeholder/300/280' }}" alt="{{ $product->name }}">
+  <div class="container">
+    <div class="section-header">
+      <h2>{{ __('Top Products') }}</h2>
+      <p>{{ __('Explore our best-selling exclusive designs') }}</p>
+    </div>
+    <div class="products-grid">
+      @foreach($topProducts as $product)
+      <div class="product-card">
+        <div class="product-image">
+          <img src="{{ $product->image ? asset('storage/'.$product->image) : '/api/placeholder/300/280' }}" alt="{{ $product->name }}">
+          
+          <div class="product-actions">
+            <a href="{{ route('products.show', $product->id) }}" class="action-btn" title="View Details">
+              <i class="fas fa-eye"></i>
+            </a>
             
-            <div class="product-actions">
-              <a href="{{ route('products.show', $product->id) }}" class="action-btn" title="View Details">
-                <i class="fas fa-eye"></i>
-              </a>
-              
-              <form action="{{ route('cart.add') }}" method="POST" class="product-action-form">
+            <form action="{{ route('cart.add') }}" method="POST" class="product-action-form">
+              @csrf
+              <input type="hidden" name="product_id" value="{{ $product->id }}">
+              <input type="hidden" name="size" value="M">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit" class="action-btn add-to-cart" title="Add to Cart">
+                <i class="fas fa-shopping-cart"></i>
+              </button>
+            </form>
+            
+            @auth
+              <form action="{{ route('favorites.toggle') }}" method="POST" class="product-action-form favorite-form">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
-                <input type="hidden" name="size" value="M">
-                <input type="hidden" name="quantity" value="1">
-                <button type="submit" class="action-btn add-to-cart" title="Add to Cart">
-                  <i class="fas fa-shopping-cart"></i>
+                <button type="submit" class="action-btn toggle-favorite {{ auth()->user()->hasFavorited($product->id) ? 'favorited' : '' }}"
+                        title="{{ auth()->user()->hasFavorited($product->id) ? 'Remove from Favorites' : 'Add to Favorites' }}">
+                  <i class="fas fa-heart"></i>
                 </button>
               </form>
-              
-              @auth
-                <form action="{{ route('favorites.toggle') }}" method="POST" class="product-action-form favorite-form">
-                  @csrf
-                  <input type="hidden" name="product_id" value="{{ $product->id }}">
-                  <button type="submit" class="action-btn toggle-favorite {{ auth()->user()->hasFavorited($product->id) ? 'favorited' : '' }}" 
-                          title="{{ auth()->user()->hasFavorited($product->id) ? 'Remove from Favorites' : 'Add to Favorites' }}">
-                    <i class="fas fa-heart"></i>
-                  </button>
-                </form>
-              @else
-                <a href="{{ route('login') }}" class="action-btn" title="Add to Favorites">
-                  <i class="fas fa-heart"></i>
-                </a>
-              @endauth
-            </div>
-          </div>
-          <div class="product-info">
-            <h3 class="product-name">{{ $product->name }}</h3>
-            <p class="product-designer">{{ __('Design by') }}: {{ $product->designer->name }}</p>
-            <span class="product-price">
-              @if($product->hasDiscount())
-                <span class="original-price">${{ number_format($product->price, 2) }}</span>
-                <span class="discount-price">${{ number_format($product->discounted_price, 2) }}</span>
-              @else
-                ${{ number_format($product->price, 2) }}
-              @endif
-            </span>
+            @else
+              <a href="{{ route('login') }}" class="action-btn" title="Add to Favorites">
+                <i class="fas fa-heart"></i>
+              </a>
+            @endauth
           </div>
         </div>
-        @endforeach
+        <div class="product-info">
+          <h3 class="product-name">{{ $product->name }}</h3>
+          <p class="product-designer">{{ __('Design by') }}:  <a href="{{ route('designers.show', $product->designer->id) }}" class="designer-link" style="color: #c44569; text-decoration: none; hover: text-decoration: underline;">
+           
+              {{ $product->designer->name }}
+            </a>
+          </p>
+          <span class="product-price">
+            @if($product->hasDiscount())
+              <span class="original-price">${{ number_format($product->price, 2) }}</span>
+              <span class="discount-price">${{ number_format($product->discounted_price, 2) }}</span>
+            @else
+              ${{ number_format($product->price, 2) }}
+            @endif
+          </span>
+        </div>
       </div>
-      <div class="view-all-btn">
-        <a href="{{ route('products.index') }}" class="btn btn-outline">{{ __('View All Products') }}</a>
-      </div>
+      @endforeach
     </div>
-  </section>
+    <div class="view-all-btn">
+      <a href="{{ route('products.index') }}" class="btn btn-outline">{{ __('View All Products') }}</a>
+    </div>
+  </div>
+</section>
 
   <!-- Courses Section -->
   <section class="courses" id="courses">

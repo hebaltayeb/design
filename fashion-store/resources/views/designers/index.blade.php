@@ -1067,33 +1067,7 @@
                 </div>
               </div>
               
-              <div class="designer-social">
-                @if($designer->instagram_url)
-                  <a href="{{ $designer->instagram_url }}" class="social-link" target="_blank" rel="noopener">
-                    <i class="fab fa-instagram"></i>
-                  </a>
-                @endif
-                @if($designer->twitter_url)
-                  <a href="{{ $designer->twitter_url }}" class="social-link" target="_blank" rel="noopener">
-                    <i class="fab fa-twitter"></i>
-                  </a>
-                @endif
-                @if($designer->facebook_url)
-                  <a href="{{ $designer->facebook_url }}" class="social-link" target="_blank" rel="noopener">
-                    <i class="fab fa-facebook-f"></i>
-                  </a>
-                @endif
-                @if($designer->website_url)
-                  <a href="{{ $designer->website_url }}" class="social-link" target="_blank" rel="noopener">
-                    <i class="fas fa-globe"></i>
-                  </a>
-                @endif
-                @if(!$designer->instagram_url && !$designer->twitter_url && !$designer->facebook_url)
-                  <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                  <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                  <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                @endif
-              </div>
+              
               
               <a href="{{ route('designers.show', $designer->id) }}" class="view-profile">{{ __('View Profile') }}</a>
             </div>
